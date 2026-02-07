@@ -1,6 +1,3 @@
-
-import ResumePDF from '../assets/resume.pdf';
-
 const navItems = [
     { name: "ABOUT", id: "about" },
     { name: "EXPERIENCE", id: "experience" },
@@ -8,7 +5,6 @@ const navItems = [
     { name: "SKILLS", id: "skills" },
     { name: "PROJECTS", id: "projects" },
     { name: "CONTACT", id: "contact" },
-    { name: "[ CV ]", file: ResumePDF, isButton: true }
 ];
 
 const Navbar = () => {

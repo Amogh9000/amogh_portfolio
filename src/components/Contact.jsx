@@ -1,7 +1,6 @@
 import React from 'react';
 import { ArrowUpRight } from 'lucide-react';
 import SecureEmail from './SecureEmail';
-import ResumePDF from '../assets/resume.pdf';
 
 const Contact = () => {
     return (
@@ -62,20 +61,15 @@ const Contact = () => {
                 </div>
             </div>
 
-            {/* Resume Download Row - Full Width */}
-            <a
-                href={ResumePDF}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full border-t border-white/20 p-8 md:p-12 flex justify-between items-center group cursor-pointer hover:bg-white hover:text-black transition-colors duration-300"
-            >
+            {/* System Status Row - Full Width */}
+            <div className="w-full border-t border-white/20 p-8 md:p-12 flex justify-between items-center group cursor-default hover:bg-white hover:text-black transition-colors duration-300">
                 <span className="text-xl md:text-3xl font-black uppercase tracking-tighter font-mono">
-                    VIEW_FULL_RESUME
+                    SYSTEM_STATUS:
                 </span>
-                <span className="text-xl md:text-3xl font-black font-mono">
-                    ↗
+                <span className="text-xl md:text-3xl font-black font-mono animate-pulse">
+                    ONLINE_&_READY
                 </span>
-            </a>
+            </div>
 
             {/* Footer Bar */}
             <div className="w-full bg-black border-t border-white/20 p-4 flex justify-between items-center text-white/40">
