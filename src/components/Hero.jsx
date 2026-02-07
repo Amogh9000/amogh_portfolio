@@ -10,9 +10,6 @@ gsap.registerPlugin(ScrollTrigger);
 // Black Wireframe Sphere for Light Mode
 const BrutalistSphere = () => {
     const meshRef = useRef();
-    const { viewport } = useThree();
-    const isMobile = viewport.width < 5; // Approximate threshold
-
     useFrame(({ clock }) => {
         const t = clock.getElapsedTime();
         if (meshRef.current) {
@@ -21,16 +18,16 @@ const BrutalistSphere = () => {
         }
     });
     return (
-        <Sphere args={[1.5, 64, 64]} ref={meshRef} scale={isMobile ? 1.2 : 1.8}>
+        <Sphere args={[1.5, 64, 64]} ref={meshRef} scale={1.8}>
             <MeshDistortMaterial
-                color="#000000"
+                color="#000000"       // Black
                 emissive="#000000"
                 emissiveIntensity={0}
                 roughness={0}
                 metalness={0.5}
                 distort={0.3}
                 speed={2}
-                wireframe={true}
+                wireframe={true}      // Black wires
             />
         </Sphere>
     );
@@ -41,9 +38,6 @@ const BrutalistSphere = () => {
 const Hero = () => {
     const sectionRef = useRef(null);
     const textRef = useRef(null);
-
-    // Check window width for initial camera position
-    const isMobile = typeof window !== 'undefined' ? window.innerWidth < 768 : false;
 
     useRightClickProtection(sectionRef);
 
@@ -102,7 +96,7 @@ const Hero = () => {
 
                 {/* 3D Object Behind Text - Now Black Wireframe on Gray */}
                 <div className="hero-sphere absolute inset-0 z-0 opacity-40">
-                    <Canvas camera={{ position: [0, 0, isMobile ? 9 : 6], fov: 45 }}>
+                    <Canvas camera={{ position: [0, 0, 6], fov: 45 }}>
                         <ambientLight intensity={1} />
                         <pointLight position={[10, 10, 10]} intensity={1.5} />
                         <BrutalistSphere />

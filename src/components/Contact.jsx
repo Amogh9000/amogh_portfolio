@@ -61,16 +61,6 @@ const Contact = () => {
                 </div>
             </div>
 
-            {/* System Status Row - Full Width */}
-            <div className="w-full border-t border-white/20 p-8 md:p-12 flex justify-between items-center group cursor-default hover:bg-white hover:text-black transition-colors duration-300">
-                <span className="text-xl md:text-3xl font-black uppercase tracking-tighter font-mono">
-                    SYSTEM_STATUS:
-                </span>
-                <span className="text-xl md:text-3xl font-black font-mono animate-pulse">
-                    ONLINE_&_READY
-                </span>
-            </div>
-
             {/* Footer Bar */}
             <div className="w-full bg-black border-t border-white/20 p-4 flex justify-between items-center text-white/40">
                 <span className="font-mono text-[10px] uppercase font-bold">
