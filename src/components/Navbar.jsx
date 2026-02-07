@@ -1,4 +1,4 @@
-import Link from 'next/link'; // Not needed, removed
+
 import ResumePDF from '../assets/resume.pdf';
 
 const navItems = [
