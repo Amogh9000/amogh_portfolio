@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import Link from 'next/link'; // Not needed, removed
+import ResumePDF from '../assets/resume.pdf';
 
 const navItems = [
     { name: "ABOUT", id: "about" },
@@ -8,7 +8,7 @@ const navItems = [
     { name: "SKILLS", id: "skills" },
     { name: "PROJECTS", id: "projects" },
     { name: "CONTACT", id: "contact" },
-    { name: "// RESUME", id: "resume", external: true }, // Added stylistic element
+    { name: "[ CV ]", file: ResumePDF, isButton: true }
 ];
 
 const Navbar = () => {
@@ -31,10 +31,12 @@ const Navbar = () => {
                 <ul className="flex items-center gap-0">
                     {navItems.map((item) => (
                         <li key={item.name} className="relative group">
-                            {item.external ? (
+                            {item.isButton ? (
                                 <a
-                                    href="#"
-                                    className="block px-4 py-2 font-mono text-sm font-bold text-black border-l border-transparent hover:bg-black hover:text-[#D1D1D1] transition-colors uppercase"
+                                    href={item.file}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block px-4 py-2 font-mono text-sm font-bold text-black border-l border-transparent hover:bg-black hover:text-[#D1D1D1] transition-colors uppercase border border-black/20 bg-white/50"
                                 >
                                     {item.name}
                                 </a>
@@ -48,7 +50,7 @@ const Navbar = () => {
                             )}
 
                             {/* Connector line effect for brutalist feel */}
-                            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[1px] h-4 bg-black/20 group-last:hidden pointer-events-none"></div>
+                            {!item.isButton && <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[1px] h-4 bg-black/20 group-last:hidden pointer-events-none"></div>}
                         </li>
                     ))}
                 </ul>
