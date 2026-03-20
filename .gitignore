@@ -62,5 +62,14 @@ coverage/
 .nyc_output/
 tmp/
 *.tmp
+*.bak
+*.swp
+*~
+*.bkp
 .lock-wscript
+
+# Specific Sensitive Assets
+resume.pdf
+secrets.json
+credentials.json
 

@@ -27,39 +27,57 @@ const skillData = [
 ];
 
 const SkillItem = ({ item }) => {
-    const [isIndividualHovered, setIsIndividualHovered] = useState(false);
+  const [isFilled, setIsFilled] = useState(false);
 
-    return (
-        <div
-            onMouseEnter={() => setIsIndividualHovered(true)}
-            onMouseLeave={() => setIsIndividualHovered(false)}
-            className="flex items-center px-16 group cursor-crosshair h-full"
-        >
-            <item.icon className="text-4xl mr-6 text-black group-hover:text-white transition-colors duration-300" />
+  const handleActive = () => {
+    setIsFilled(true);
+    // Custom event to tell the Portfolio cursor to expand
+    window.dispatchEvent(new Event("portfolio-node-active"));
+  };
 
-            <span
-                className="text-[6vw] font-black uppercase tracking-tighter transition-all duration-300"
-                style={{
-                    WebkitTextStroke: "1px black",
-                    color: isIndividualHovered ? "black" : "transparent",
-                }}
-            >
-                {item.name}
-            </span>
+  const handleInactive = () => {
+    setIsFilled(false);
+    window.dispatchEvent(new Event("portfolio-node-inactive"));
+  };
 
-            <span className="ml-8 text-black/20 font-mono text-xs tracking-[0.3em] hidden md:inline group-hover:text-black">
-                [ {item.id} ]
-            </span>
-        </div>
-    );
+  return (
+    <div 
+      onMouseEnter={handleActive} 
+      onMouseLeave={handleInactive}
+      onTouchStart={handleActive} 
+      onTouchEnd={handleInactive}
+      // Fixed: responsive padding to prevent the overlap seen in mobile viewports
+      className="flex items-center px-6 md:px-16 group cursor-none select-none h-full touch-none"
+    >
+      <item.icon className={`text-2xl md:text-4xl mr-4 md:mr-6 transition-colors duration-300 ${isFilled ? 'text-white' : 'text-black'}`} />
+      <span 
+        // Fixed: Adjusted font-size (8vw for mobile) to prevent text stacking
+        className="text-[8vw] md:text-[6vw] font-black uppercase tracking-tighter transition-all duration-300"
+        style={{ 
+          WebkitTextStroke: "1px black",
+          color: isFilled ? "black" : "transparent" 
+        }}
+      >
+        {item.name}
+      </span>
+      <span className={`ml-4 md:ml-8 font-mono text-[8px] md:text-xs tracking-[0.3em] hidden sm:inline transition-opacity ${isFilled ? 'opacity-100' : 'opacity-20'}`}>
+        [ {item.id} ]
+      </span>
+    </div>
+  );
 };
 
 const MarqueeRow = ({ items, direction = 1, baseSpeed = 40 }) => {
     const [rowHovered, setRowHovered] = useState(false);
+    
+    // REFRESHED: Mobile needs faster speed values because the distance (50%) is smaller
+    const responsiveSpeed = typeof window !== 'undefined' && window.innerWidth < 768 
+        ? baseSpeed * 0.5 
+        : baseSpeed;
 
     return (
         <div
-            className="flex overflow-hidden whitespace-nowrap border-b border-black/10 py-6"
+            className="flex overflow-hidden whitespace-nowrap border-b border-black/10 py-3 md:py-6"
             onMouseEnter={() => setRowHovered(true)}
             onMouseLeave={() => setRowHovered(false)}
         >
@@ -67,13 +85,14 @@ const MarqueeRow = ({ items, direction = 1, baseSpeed = 40 }) => {
                 initial={{ x: direction > 0 ? 0 : "-50%" }}
                 animate={{ x: direction > 0 ? "-50%" : 0 }}
                 transition={{
-                    duration: rowHovered ? baseSpeed * 2.5 : baseSpeed,
+                    duration: rowHovered ? responsiveSpeed * 2.5 : responsiveSpeed,
                     repeat: Infinity,
                     ease: "linear"
                 }}
                 className="flex"
             >
-                {[...items, ...items].map((item, index) => (
+                {/* REFRESHED: Tripling items ensures no white-space gaps on high-res mobile screens */}
+                {[...items, ...items, ...items].map((item, index) => (
                     <SkillItem key={index} item={item} />
                 ))}
             </motion.div>
