@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import SecureEmail from './SecureEmail';
 
@@ -13,7 +14,7 @@ const Contact = () => {
 
                 {/* LEFT: Massive Headline (Improved Copy) */}
                 <div className="w-full md:w-2/3 border-b md:border-b-0 md:border-r border-white/20 p-8 md:p-16 flex flex-col justify-center group hover:bg-white hover:text-black transition-colors duration-300 cursor-crosshair">
-                    <span className="font-mono text-xs uppercase tracking-widest opacity-60 mb-8 group-hover:text-black/60">
+                    <span className="font-mono text-xs uppercase tracking-widest opacity-60 mb-8 group-hover:text-black/60 transition-colors">
                         [ Status: Available_For_Hire ]
                     </span>
 
@@ -24,9 +25,28 @@ const Contact = () => {
                         LET'S <br /> BUILD <br /> IMPACT
                     </h2>
 
-                    <div className="mt-12 flex items-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <span className="font-mono text-sm font-bold uppercase tracking-widest">Initiate_Collaboration</span>
-                        <ArrowUpRight strokeWidth={3} />
+                    <div className="mt-12">
+                        <motion.button
+                            whileHover={{
+                                boxShadow: "4px 4px 0px #000000",
+                                borderColor: "#000000"
+                            }}
+                            whileTap={{
+                                x: 4,
+                                y: 4,
+                                boxShadow: "0px 0px 0px #000000"
+                            }}
+                            transition={{
+                                type: "spring",
+                                stiffness: 400,
+                                damping: 25,
+                                tap: { duration: 0.05 }
+                            }}
+                            className="flex items-center gap-4 border border-transparent bg-transparent px-6 py-3 font-mono text-sm font-bold uppercase tracking-widest group-hover:border-black transition-colors duration-300"
+                        >
+                            <span>INITIATE_HANDSHAKE</span>
+                            <ArrowUpRight strokeWidth={3} />
+                        </motion.button>
                     </div>
                 </div>
 
@@ -67,7 +87,7 @@ const Contact = () => {
                     © 2026 Amogh M.
                 </span>
                 <span className="font-mono text-[10px] uppercase font-bold">
-                    GG
+                    [ BUILD_VER: 2.0.4-STABLE ]
                 </span>
             </div>
         </section>

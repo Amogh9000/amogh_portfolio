@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 const navItems = [
-    { name: "ABOUT", id: "about" },
+    { name: "OPERATOR PROFILE", id: "about" },
     { name: "EXPERIENCE", id: "experience" },
-    { name: "CERTIFICATIONS", id: "certifications" },
-    { name: "SKILLS", id: "skills" },
     { name: "PROJECTS", id: "projects" },
+    { name: "SKILLS", id: "skills" },
+    { name: "CERTIFICATIONS", id: "certifications" },
     { name: "CONTACT", id: "contact" }
 ];
 
@@ -30,31 +30,60 @@ const Navbar = () => {
             <motion.nav
                 initial={{ y: -100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.8, delay: 0.5 }}
+                transition={{ duration: 0.8, delay: 1.8 }}
                 className="fixed top-6 left-0 right-0 z-50 flex justify-center pointer-events-none px-6 md:px-0"
             >
                 <div className="pointer-events-auto bg-[#D1D1D1]/90 backdrop-blur-md border border-black p-1 shadow-[4px_4px_0px_#000000] flex justify-between items-center w-full md:w-auto">
 
                     {/* Desktop Menu */}
-                    <ul className="hidden md:flex items-center gap-0">
+                    <ul className="hidden md:flex items-center gap-2 px-2">
                         {navItems.map((item) => (
-                            <li key={item.name} className="relative group">
+                            <li key={item.name} className="relative">
                                 {item.external ? (
-                                    <a
+                                    <motion.a
                                         href="#"
-                                        className="block px-4 py-2 font-mono text-sm font-bold text-black border-l border-transparent hover:bg-black hover:text-[#D1D1D1] transition-colors uppercase"
+                                        whileHover={{ 
+                                            boxShadow: "4px 4px 0px #000000",
+                                            borderColor: "#000000"
+                                        }}
+                                        whileTap={{ 
+                                            x: 4, 
+                                            y: 4, 
+                                            boxShadow: "0px 0px 0px #000000" 
+                                        }}
+                                        transition={{ 
+                                            type: "spring", 
+                                            stiffness: 400, 
+                                            damping: 25,
+                                            tap: { duration: 0.05 }
+                                        }}
+                                        className="block px-4 py-2 font-mono text-sm font-bold text-black border border-transparent uppercase bg-transparent"
                                     >
                                         {item.name}
-                                    </a>
+                                    </motion.a>
                                 ) : (
-                                    <button
+                                    <motion.button
                                         onClick={() => scrollToSection(item.id)}
-                                        className="block px-4 py-2 font-mono text-sm font-bold text-black border-l border-transparent hover:bg-black hover:text-[#D1D1D1] transition-colors uppercase"
+                                        whileHover={{ 
+                                            boxShadow: "4px 4px 0px #000000",
+                                            borderColor: "#000000"
+                                        }}
+                                        whileTap={{ 
+                                            x: 4, 
+                                            y: 4, 
+                                            boxShadow: "0px 0px 0px #000000" 
+                                        }}
+                                        transition={{ 
+                                            type: "spring", 
+                                            stiffness: 400, 
+                                            damping: 25,
+                                            tap: { duration: 0.05 }
+                                        }}
+                                        className="nav-item block px-4 py-2 font-mono text-sm font-bold text-black border border-transparent uppercase bg-transparent"
                                     >
                                         {item.name}
-                                    </button>
+                                    </motion.button>
                                 )}
-                                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[1px] h-4 bg-black/20 group-last:hidden pointer-events-none"></div>
                             </li>
                         ))}
                     </ul>

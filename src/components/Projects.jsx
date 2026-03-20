@@ -1,153 +1,196 @@
-import React, { useState } from "react";
-import { ArrowUpRight } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 
 // Project Data
 const projects = [
     {
         id: "01",
-        title: "PULSE",
-        category: "HEALTHCARE_AI",
-        github: "https://github.com/Amogh9000/pulse_v2"
+        title: "GridSentinel",
+        category: "AI_SYSTEMS",
+        description: "An edge-AI anomaly detection system for urban power grids. Uses explainable ML and GIS context to identify failures before they escalate.",
+        tech: ["Python", "Machine Learning", "Edge-AI", "GIS"],
+        github: "https://github.com/Amogh9000/GridSentinel"
     },
     {
         id: "02",
-        title: "PAPERLENS",
-        category: "COMPUTER_VISION",
-        github: "https://github.com/Amogh9000/PaperLens"
+        title: "PULSE",
+        category: "HEALTHCARE_AI",
+        description: "A multi-agent hospital operations cockpit. Automates resource optimization and provides real-time department-level risk analysis using LLMs and Digital Twin simulations.",
+        tech: ["LLMs", "FastAPI", "Groq", "Facebook Prophet"],
+        github: "https://github.com/Amogh9000/pulse_v2"
     },
     {
         id: "03",
+        title: "PAPERLENS",
+        category: "COMPUTER_VISION",
+        description: "A computer vision system for analyzing and understanding research papers.",
+        tech: ["Python", "Computer Vision", "Machine Learning"],
+        github: "https://github.com/Amogh9000/PaperLens"
+    },
+    {
+        id: "04",
         title: "CREDIFI",
         category: "FINTECH_WEB3",
+        description: "A fintech web3 system for analyzing and understanding research papers.",
+        tech: ["Streamlit", "Python", "Web3.py", "Solidity"],
         github: "https://github.com/Amogh9000/CrediFi"
     }
 ];
 
-const ProjectRow = ({ project, isActive, onClick }) => {
+// Typewriter Component
+const TypewriterMonitor = ({ project }) => {
+    const [displayedText, setDisplayedText] = useState("");
+
+    const fullText = project
+        ? `> INITIATING DIAGNOSTIC...
+> TARGET: ${project.id} // ${project.title}
+
+[ DESCRIPTION ]
+${project.description}
+
+[ TECH_STACK ]
+${project.tech.map(t => `> ${t.toUpperCase()}`).join("\n")}
+
+[ STATUS ]
+> SYSTEM ONLINE
+> AWAITING INPUT...`
+        : `> NO TARGET SELECTED
+> AWAITING HOVER INPUT...
+> SYSTEM ONLINE`;
+
+    useEffect(() => {
+        setDisplayedText("");
+        let i = 0;
+
+        // Clear immediately and start typing
+        const intervalId = setInterval(() => {
+            setDisplayedText(fullText.slice(0, i + 1));
+            i++;
+            if (i >= fullText.length) {
+                clearInterval(intervalId);
+            }
+        }, 15); // Fast typing speed
+
+        return () => clearInterval(intervalId);
+    }, [fullText]);
+
     return (
-        <div
-            onClick={onClick}
-            className={`group border-t border-black transition-colors duration-100 ease-linear cursor-default 
-                ${isActive ? "bg-black text-white" : "bg-[#D1D1D1] hover:bg-black hover:text-white"}`}
-        >
-            <div className="flex flex-col items-start py-8 px-6 md:py-12 md:px-12 md:flex-row md:items-center md:justify-between">
-
-                {/* LEFT: Number + Title */}
-                <div className="flex flex-col md:flex-row md:items-center md:gap-16 w-full md:w-auto">
-                    {/* ID */}
-                    <span className={`font-mono text-xs md:text-sm font-bold opacity-60 transition-colors duration-100 mb-2 md:mb-0
-                        ${isActive ? "text-white opacity-100" : "group-hover:text-white group-hover:opacity-100"}`}>
-                        ( {project.id} )
-                    </span>
-
-                    {/* Title */}
-                    <h3
-                        className={`text-6xl md:text-8xl font-black tracking-tighter leading-[0.8] uppercase transition-colors duration-100
-                            ${isActive ? "text-white" : "group-hover:text-white"}`}
-                        style={{ fontFamily: 'Inter, sans-serif' }}
-                    >
-                        {project.title}
-                    </h3>
-
-                    {/* Mobile Links (Stacked below title) */}
-                    <div className="flex flex-col gap-4 mt-8 md:hidden font-mono text-sm font-bold tracking-widest w-full">
-                        <a
-                            href={project.github}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={`min-h-[44px] flex items-center border-b border-white/20 pb-2
-                                ${isActive ? "text-white opacity-100" : "text-black opacity-60"}`}
-                            // Prevent row toggle when clicking link
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            [ GITHUB ]
-                        </a>
-                        <a
-                            href={project.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={`min-h-[44px] flex items-center border-b border-white/20 pb-2
-                                ${isActive ? "text-white opacity-100" : "text-black opacity-60"}`}
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            [ LIVE_SITE ]
-                        </a>
-                    </div>
-                </div>
-
-                {/* RIGHT: Desktop Links */}
-                <div className="hidden md:flex items-center gap-8 mt-4 md:mt-0 font-mono text-[10px] font-bold tracking-widest">
-                    <a
-                        href={project.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:underline underline-offset-4 decoration-1 decoration-white opacity-60 hover:opacity-100 group-hover:text-white transition-all"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        [ GITHUB ]
-                    </a>
-                    <a
-                        href={project.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:underline underline-offset-4 decoration-1 decoration-white opacity-60 hover:opacity-100 group-hover:text-white transition-all"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        [ LIVE_SITE ]
-                    </a>
-                </div>
-            </div>
+        <div className="font-mono text-sm md:text-base text-black whitespace-pre-wrap leading-relaxed tracking-tight">
+            {displayedText}
+            <span className="animate-pulse font-black opacity-80">_</span>
         </div>
     );
 };
 
 const Projects = () => {
-    const [activeProjectId, setActiveProjectId] = useState(null);
-
-    const handleProjectClick = (id) => {
-        // Toggle active state on click (mainly for mobile)
-        if (activeProjectId === id) {
-            setActiveProjectId(null);
-        } else {
-            setActiveProjectId(id);
-        }
-    };
+    const [hoveredProject, setHoveredProject] = useState(projects[0]);
 
     return (
         <section
             id="projects"
-            className="w-full bg-[#D1D1D1] pt-32 pb-0 relative cursor-default border-t border-black"
+            className="w-full bg-[#D1D1D1] pt-32 pb-32 relative border-t border-black cursor-default"
         >
-            {/* Header: Selected Works */}
-            <div className="max-w-[90%] mx-auto mb-16 flex justify-between items-end border-b border-black pb-4">
-                <h2 className="text-black text-sm font-mono tracking-widest uppercase">
+            {/* Header */}
+            <div className="max-w-[95%] mx-auto mb-16 flex justify-between items-end border-b border-black pb-4 px-2">
+                <h2 className="text-black text-xs md:text-sm font-mono tracking-widest uppercase font-bold">
                     // Selected_Works
                 </h2>
-                <span className="text-black text-xs font-mono">
-                    ( 03 )
+                <span className="text-black text-xs md:text-sm font-mono font-bold">
+                    ( 04 )
                 </span>
             </div>
 
-            {/* List */}
-            <div className="w-full">
-                {projects.map((p) => (
-                    <ProjectRow
-                        key={p.id}
-                        project={p}
-                        isActive={activeProjectId === p.id}
-                        onClick={() => handleProjectClick(p.id)}
-                    />
-                ))}
-            </div>
+            {/* Split Screen Container */}
+            <div className="max-w-[95%] mx-auto flex flex-col md:flex-row border-t border-black">
 
-            {/* Footer: Status Available (Reused Header Style) */}
-            <div className="max-w-[90%] mx-auto mt-25 mb-16 flex justify-between items-end border-b border-black pb-4">
-                <h2 className="text-black text-sm font-mono tracking-widest uppercase">
-                    // Status : Available_For_Hire
-                </h2>
-                <span className="text-black text-xs font-mono">
-                    ( 2026 )
-                </span>
+                {/* Left Side: 60% Project List */}
+                <div className="w-full md:w-[60%] flex flex-col md:border-r md:border-black">
+                    {projects.map((p) => (
+                        <div
+                            key={p.id}
+                            onMouseEnter={() => setHoveredProject(p)}
+                            // On mobile, just select active on tap
+                            onClick={() => setHoveredProject(p)}
+                            className={`project-row group border-b border-black flex flex-col py-8 px-6 md:py-12 md:px-12 transition-colors duration-150 ease-linear cursor-crosshair
+                                ${hoveredProject?.id === p.id ? "bg-black text-[#D1D1D1]" : "bg-[#D1D1D1] hover:bg-black hover:text-[#D1D1D1]"}
+                            `}
+                        >
+                            <span className={`font-mono text-xs font-bold mb-4 opacity-70 
+                                ${hoveredProject?.id === p.id ? "text-[#D1D1D1]" : "text-black group-hover:text-[#D1D1D1]"}`}
+                            >
+                                [ ID: {p.id} ]
+                            </span>
+
+                            <h3
+                                className="text-5xl md:text-7xl lg:text-8xl font-black uppercase leading-[0.8] tracking-tighter"
+                                style={{ fontFamily: 'Inter Tight, sans-serif' }}
+                            >
+                                {p.title}
+                            </h3>
+
+                            {/* Mobile Links */}
+                            <div className={`mt-8 flex gap-6 md:hidden font-mono text-xs font-bold tracking-widest
+                                ${hoveredProject?.id === p.id ? "text-[#D1D1D1]" : "text-black group-hover:text-[#D1D1D1]"}`}
+                            >
+                                {p.github !== "#" && (
+                                    <a href={p.github} target="_blank" rel="noopener noreferrer" className="hover:underline underline-offset-4 border border-current px-3 py-1">
+                                        [ GITHUB ]
+                                    </a>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Right Side: 40% Sticky Monitor */}
+                <div className="w-full md:w-[40%] bg-[#D1D1D1] p-6 md:p-10 relative border-b md:border-b-0 border-black">
+                    <div className="sticky top-32 w-full min-h-[400px] border border-black p-6 bg-[#D1D1D1] shadow-[8px_8px_0px_#000000]">
+                        {/* Monitor Header */}
+                        <div className="border-b border-black pb-2 mb-4 flex justify-between items-center opacity-60">
+                            <span className="font-mono text-xs font-bold tracking-widest uppercase text-black">
+                                // SYSTEM_MONITOR
+                            </span>
+                            <span className="font-mono text-xs font-bold tracking-widest text-black">
+                                v2.0
+                            </span>
+                        </div>
+
+                        {/* Terminal Screen inside Monitor */}
+                        <div className="min-h-[300px]">
+                            <TypewriterMonitor project={hoveredProject} />
+                        </div>
+
+                        {/* Desktop Links at bottom of monitor */}
+                        {hoveredProject && hoveredProject.github !== "#" && (
+                            <div className="hidden md:flex mt-8 border-t border-black pt-4">
+                                <motion.a
+                                    href={hoveredProject.github}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    whileHover={{ 
+                                        boxShadow: "4px 4px 0px #000000",
+                                        borderColor: "#000000"
+                                    }}
+                                    whileTap={{ 
+                                        x: 4, 
+                                        y: 4, 
+                                        boxShadow: "0px 0px 0px #000000" 
+                                    }}
+                                    transition={{ 
+                                        type: "spring", 
+                                        stiffness: 400, 
+                                        damping: 25,
+                                        tap: { duration: 0.05 }
+                                    }}
+                                    className="font-mono text-xs font-bold text-black border border-transparent bg-transparent px-4 py-2 uppercase tracking-widest block w-fit"
+                                >
+                                    [ DECRYPT_SOURCE_CODE (GITHUB) ]
+                                </motion.a>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
             </div>
         </section>
     );

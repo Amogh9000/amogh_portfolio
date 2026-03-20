@@ -81,9 +81,29 @@ const Experience = () => {
                                 </div>
                             </div>
 
-                            {/* Description */}
-                            <p className="text-black/80 text-base leading-relaxed max-w-2xl">
-                            </p>
+                            {/* Main Content + Metadata Sidebar */}
+                            <div className="flex flex-col md:flex-row gap-8">
+                                {/* Description */}
+                                <p className="flex-grow text-black/80 text-base leading-relaxed max-w-2xl">
+                                    Building a deep learning-based audio event detection system for kitchen activity recognition using YAMNet and
+                                    transfer learning and evaluating model robustness under real-world noise via feature extraction and Log-Mel spectrogram analysis.
+                                </p>
+
+                                {/* Metadata Sidebar */}
+                                <div className="hidden md:flex flex-col gap-2 pl-6 border-l border-black/20 min-w-[200px]">
+                                    <span className="font-mono text-[0.7rem] font-bold text-black uppercase">[ ENGINE: YAMNet ]</span>
+                                    <span className="font-mono text-[0.7rem] font-bold text-black uppercase">[ INPUT: LOG-MEL_SPECTROGRAMS ]</span>
+                                    <span className="font-mono text-[0.7rem] font-bold text-black uppercase">[ TASK: AUDIO_EVENT_DETECTION ]</span>
+                                    <span className="font-mono text-[0.7rem] font-bold text-black uppercase">[ STATUS: ACTIVE ]</span>
+                                </div>
+
+                                {/* Mobile Metadata Horizontal Row */}
+                                <div className="flex md:hidden flex-wrap gap-2 mt-4 pt-4 border-t border-black/10">
+                                    <span className="font-mono text-[0.65rem] font-bold text-black/60 uppercase">[ ENGINE: YAMNet ]</span>
+                                    <span className="font-mono text-[0.65rem] font-bold text-black/60 uppercase">[ INPUT: LOG-MEL ]</span>
+                                    <span className="font-mono text-[0.65rem] font-bold text-black/60 uppercase">[ STATUS: ACTIVE ]</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -109,28 +129,46 @@ const Experience = () => {
                                 </div>
                             </div>
 
-                            {/* Description */}
-                            <p className="text-black/80 text-base leading-relaxed max-w-2xl">
-                                Worked on large-scale dataset preprocessing and model optimization for healthcare applications.
-                            </p>
+                            {/* Main Content + Metadata Sidebar */}
+                            <div className="flex flex-col md:flex-row gap-8">
+                                <div className="flex-grow">
+                                    {/* Description */}
+                                    <p className="text-black/80 text-base leading-relaxed max-w-2xl">
+                                        Worked on large-scale dataset preprocessing and model optimization for healthcare applications.
+                                    </p>
 
-                            {/* Achievements */}
-                            <ul className="space-y-3 mt-6">
-                                <li className="flex items-start gap-3 text-black/80">
-                                    <span className="text-black font-bold mt-1">▹</span>
-                                    <span>Preprocessed 48K+ dataset entries, applying SMOTE to balance class distribution.</span>
-                                </li>
-                                <li className="flex items-start gap-3 text-black/80">
-                                    <span className="text-black font-bold mt-1">▹</span>
-                                    <span>Fine-tuned Gradient Boosting models achieving 86% accuracy.</span>
-                                </li>
-                                <li className="flex items-start gap-3 text-black/80">
-                                    <span className="text-black font-bold mt-1">▹</span>
-                                    <span>Implemented Responsible AI practices to ensure model fairness.</span>
-                                </li>
-                            </ul>
+                                    {/* Achievements */}
+                                    <ul className="space-y-3 mt-6">
+                                        <li className="flex items-start gap-3 text-black/80">
+                                            <span className="text-black font-bold mt-1">▹</span>
+                                            <span>Preprocessed 48K+ dataset entries, applying SMOTE to balance class distribution.</span>
+                                        </li>
+                                        <li className="flex items-start gap-3 text-black/80">
+                                            <span className="text-black font-bold mt-1">▹</span>
+                                            <span>Fine-tuned Gradient Boosting models achieving 86% accuracy.</span>
+                                        </li>
+                                        <li className="flex items-start gap-3 text-black/80">
+                                            <span className="text-black font-bold mt-1">▹</span>
+                                            <span>Implemented Responsible AI practices to ensure model fairness.</span>
+                                        </li>
+                                    </ul>
+                                </div>
 
+                                {/* Metadata Sidebar */}
+                                <div className="hidden md:flex flex-col gap-2 pl-6 border-l border-black/20 min-w-[200px]">
+                                    <span className="font-mono text-[0.7rem] font-bold text-black uppercase">[ DATASET: 48K_RECORDS ]</span>
+                                    <span className="font-mono text-[0.7rem] font-bold text-black uppercase">[ PIPELINE: SMOTE ]</span>
+                                    <span className="font-mono text-[0.7rem] font-bold text-black uppercase">[ MODEL: GRADIENT_BOOSTING ]</span>
+                                    <span className="font-mono text-[0.7rem] font-bold text-black uppercase">[ ACCURACY: 86% ]</span>
+                                </div>
 
+                                {/* Mobile Metadata Horizontal Row */}
+                                <div className="flex md:hidden flex-wrap gap-2 mt-4 pt-4 border-t border-black/10">
+                                    <span className="font-mono text-[0.65rem] font-bold text-black/60 uppercase">[ DATA: 48K ]</span>
+                                    <span className="font-mono text-[0.65rem] font-bold text-black/60 uppercase">[ MODEL: G-BOOSTING ]</span>
+                                    <span className="font-mono text-[0.65rem] font-bold text-black/60 uppercase">[ ACCURACY: 86% ]</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

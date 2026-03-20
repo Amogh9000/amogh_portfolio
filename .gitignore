@@ -1,55 +1,66 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-# Dependencies
-node_modules
-dist
-dist-ssr
-*.local
-
-# Environment variables
+# Environment & Secrets
 .env
+.env.*
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+.npmrc
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# OS & IDE
 .DS_Store
+Thumbs.db
+.vscode/
+!.vscode/extensions.json
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
-# OS Files
-Thumbs.db
-.DS_Store
+# Dependencies
+node_modules/
+.pnpm-store/
+jspm_packages/
 
-# Build artifacts
-build
-.cache
+# Build & Cache
+dist/
+dist-ssr/
+build/
+.cache/
+.parcel-cache/
+.turbo/
+.vercel/
+.netlify/
+.firebaserc
+firebase.json
+amplify/
+.aws-sam/
 
-# Testing
-coverage
-.nyc_output
+# AI & Agents
+.gemini/
+.agents/
+.agent/
+_agents/
+_agent/
+.cortex/
+brain/
+workflows/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
 # Misc
 .eslintcache
+coverage/
+.nyc_output/
+tmp/
+*.tmp
+.lock-wscript
 
-# Hosting
-.vercel
-.netlify
-.firebaserc
-firebase.json
-amplify
-.aws-sam

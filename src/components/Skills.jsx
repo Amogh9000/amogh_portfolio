@@ -1,218 +1,157 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-    SiPython,
-    SiTensorflow,
-    SiOpencv,
-    SiStreamlit,
-    SiR,
-    SiScikitlearn,
-    SiMysql,
-    SiC,
-    SiTableau,
+    SiPython, SiTensorflow, SiOpencv, SiStreamlit, SiMysql, SiFastapi, SiC, SiR,
+    SiScikitlearn, SiTableau
 } from "react-icons/si";
 import { TbBrandPython, TbChartBar, TbDatabase } from "react-icons/tb";
-import { FaCode, FaBrain, FaEye, FaRocket } from "react-icons/fa";
+import { FaBrain, FaRocket, FaEye, FaList, FaTimes } from "react-icons/fa";
 
-// CATEGORIZED INVENTORY DATA STRUCTURE
-const skillCategories = {
-    LANGUAGES: [
-        { id: "L01", name: "PYTHON", icon: SiPython },
-        { id: "L02", name: "C", icon: SiC },
-        { id: "L03", name: "SQL", icon: SiMysql },
-        { id: "L04", name: "R", icon: SiR },
-    ],
-    MACHINE_LEARNING: [
-        { id: "ML01", name: "SCIKIT-LEARN", icon: SiScikitlearn },
-        { id: "ML02", name: "XGBOOST", icon: TbBrandPython },
-        { id: "ML03", name: "TENSORFLOW", icon: SiTensorflow },
-        { id: "ML04", name: "DEEP LEARNING", icon: FaBrain },
-        { id: "ML05", name: "FEATURE ENG.", icon: TbDatabase },
-        { id: "ML06", name: "TEXT EMBEDDINGS", icon: TbChartBar },
-    ],
-    VISION_ANALYTICS: [
-        { id: "VA01", name: "DATA PREPROC.", icon: TbDatabase },
-        { id: "VA02", name: "OPENCV", icon: SiOpencv },
-        { id: "VA03", name: "MATPLOTLIB", icon: TbChartBar },
-        { id: "VA04", name: "SEABORN", icon: TbChartBar },
-    ],
-    DEPLOYMENT: [
-        { id: "D01", name: "STREAMLIT", icon: SiStreamlit },
-        { id: "D02", name: "TABLEAU", icon: SiTableau },
-        { id: "D03", name: "EXCEL", icon: TbChartBar },
-    ],
-};
+const skillData = [
+    { id: "L01", name: "PYTHON", icon: SiPython },
+    { id: "L02", name: "SQL", icon: SiMysql },
+    { id: "L03", name: "C", icon: SiC },
+    { id: "L04", name: "R", icon: SiR },
+    { id: "AI01", name: "DEEP LEARNING", icon: FaBrain },
+    { id: "AI02", name: "TENSORFLOW", icon: SiTensorflow },
+    { id: "AI03", name: "SCIKIT-LEARN", icon: SiScikitlearn },
+    { id: "AI04", name: "LLMS", icon: TbBrandPython },
+    { id: "AI05", name: "RAG ARCHITECTURE", icon: TbDatabase },
+    { id: "AI06", name: "AGENTIC WORKFLOWS", icon: FaRocket },
+    { id: "VA01", name: "OPENCV", icon: SiOpencv },
+    { id: "VA02", name: "LOG-MEL SPECS", icon: TbChartBar },
+    { id: "VA03", name: "FEATURE EXT.", icon: FaEye },
+    { id: "BO01", name: "FASTAPI", icon: SiFastapi },
+    { id: "BO02", name: "STREAMLIT", icon: SiStreamlit },
+    { id: "BO03", name: "TABLEAU", icon: SiTableau }
+];
 
-// Empty Slot Component with Diagonal Hatch Pattern
-const EmptySlot = ({ index }) => {
+const SkillItem = ({ item }) => {
+    const [isIndividualHovered, setIsIndividualHovered] = useState(false);
+
     return (
         <div
-            className="relative h-[200px] md:h-[240px] border border-black bg-[#D1D1D1] overflow-hidden"
-            style={{
-                backgroundImage: `repeating-linear-gradient(
-                    45deg,
-                    transparent,
-                    transparent 10px,
-                    rgba(0, 0, 0, 0.05) 10px,
-                    rgba(0, 0, 0, 0.05) 20px
-                )`,
-            }}
+            onMouseEnter={() => setIsIndividualHovered(true)}
+            onMouseLeave={() => setIsIndividualHovered(false)}
+            className="flex items-center px-16 group cursor-crosshair h-full"
         >
-            {/* X Wireframe */}
-            <svg className="absolute inset-0 w-full h-full opacity-10" viewBox="0 0 100 100" preserveAspectRatio="none">
-                <line x1="0" y1="0" x2="100" y2="100" stroke="black" strokeWidth="0.5" />
-                <line x1="100" y1="0" x2="0" y2="100" stroke="black" strokeWidth="0.5" />
-            </svg>
+            <item.icon className="text-4xl mr-6 text-black group-hover:text-white transition-colors duration-300" />
 
-            {/* Empty Label */}
-            <div className="absolute inset-0 flex items-center justify-center">
-                <span className="font-mono text-[10px] text-black/20 tracking-widest">[ EMPTY ]</span>
-            </div>
+            <span
+                className="text-[6vw] font-black uppercase tracking-tighter transition-all duration-300"
+                style={{
+                    WebkitTextStroke: "1px black",
+                    color: isIndividualHovered ? "black" : "transparent",
+                }}
+            >
+                {item.name}
+            </span>
+
+            <span className="ml-8 text-black/20 font-mono text-xs tracking-[0.3em] hidden md:inline group-hover:text-black">
+                [ {item.id} ]
+            </span>
         </div>
     );
 };
 
-// Skill Cell Component (The 'Blimp' Interaction)
-const SkillCell = ({ skill, index }) => {
-    const [isHovered, setIsHovered] = useState(false);
-    const Icon = skill.icon;
+const MarqueeRow = ({ items, direction = 1, baseSpeed = 40 }) => {
+    const [rowHovered, setRowHovered] = useState(false);
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: index * 0.05 }}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-            className="group relative h-[200px] md:h-[240px] border border-black bg-[#D1D1D1] hover:bg-black transition-colors duration-300 cursor-crosshair overflow-hidden"
+        <div
+            className="flex overflow-hidden whitespace-nowrap border-b border-black/10 py-6"
+            onMouseEnter={() => setRowHovered(true)}
+            onMouseLeave={() => setRowHovered(false)}
         >
-            {/* ID - Top Left */}
-            <div className="absolute top-3 left-3 z-10">
-                <span className="text-[10px] font-mono font-bold text-black/60 group-hover:text-white/60 transition-colors duration-300">
-                    {skill.id}
-                </span>
-            </div>
+            <motion.div
+                initial={{ x: direction > 0 ? 0 : "-50%" }}
+                animate={{ x: direction > 0 ? "-50%" : 0 }}
+                transition={{
+                    duration: rowHovered ? baseSpeed * 2.5 : baseSpeed,
+                    repeat: Infinity,
+                    ease: "linear"
+                }}
+                className="flex"
+            >
+                {[...items, ...items].map((item, index) => (
+                    <SkillItem key={index} item={item} />
+                ))}
+            </motion.div>
+        </div>
+    );
+};
 
-            {/* Center Content: Icon → Text on Hover */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none p-4">
+const Skills = () => {
+    const [showList, setShowList] = useState(false);
+
+    return (
+        <section id="skills" className="w-full bg-[#D1D1D1] py-20 overflow-hidden relative min-h-screen">
+            <div className="absolute inset-0 pointer-events-none z-0 opacity-[0.05]"
+                style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '50px 50px' }} />
+
+            <div className="relative z-10">
+                <div className="px-[5%] mb-16 flex justify-between items-end">
+                    <div>
+                        <h2 className="text-[10px] font-mono tracking-[0.5em] text-black/40 uppercase mb-2">
+                            // KINETIC_DATA_STREAM
+                        </h2>
+                        <div className="h-1 w-12 bg-black" />
+                    </div>
+
+                    <button
+                        onClick={() => setShowList(!showList)}
+                        className="flex items-center gap-3 bg-black text-white px-6 py-3 font-mono text-[11px] tracking-widest hover:bg-[#D1D1D1] hover:text-black transition-all border border-black"
+                    >
+                        {showList ? <><FaTimes /> CLOSE_ARRAY</> : <><FaList /> ACCESS_FULL_MANIFEST</>}
+                    </button>
+                </div>
+
                 <AnimatePresence mode="wait">
-                    {!isHovered ? (
-                        <motion.div
-                            key="icon"
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.5 }}
-                            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                        >
-                            <Icon className="text-7xl md:text-8xl text-black opacity-80" />
+                    {!showList ? (
+                        <motion.div key="marquee" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                            <MarqueeRow items={skillData.slice(0, 6)} direction={1} baseSpeed={50} />
+                            <MarqueeRow items={skillData.slice(6, 11)} direction={-1} baseSpeed={60} />
+                            <MarqueeRow items={skillData.slice(11)} direction={1} baseSpeed={45} />
                         </motion.div>
                     ) : (
                         <motion.div
-                            key="text"
-                            initial={{ opacity: 0, y: 20, scale: 1.1 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{ type: "spring", stiffness: 200, damping: 20 }}
-                            className="w-full text-center px-2"
+                            key="list"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 10 }}
+                            className="px-[5%] grid grid-cols-1 md:grid-cols-3 gap-1"
                         >
-                            <h3 className="font-[900] text-3xl md:text-4xl lg:text-5xl tracking-[-0.05em] leading-none text-white uppercase break-words">
-                                {skill.name}
-                            </h3>
+                            {skillData.map((skill) => (
+                                <div key={skill.id} className="border border-black/10 p-10 flex items-center justify-between bg-black/5 hover:bg-black group transition-all duration-300">
+                                    <div className="flex items-center gap-6">
+                                        <skill.icon className="text-3xl text-black group-hover:text-white transition-colors" />
+                                        <span className="font-mono text-sm font-black uppercase text-black group-hover:text-white tracking-tighter">
+                                            {skill.name}
+                                        </span>
+                                    </div>
+                                    <span className="font-mono text-[9px] text-black/30 group-hover:text-white/20">
+                                        {skill.id}
+                                    </span>
+                                </div>
+                            ))}
                         </motion.div>
                     )}
                 </AnimatePresence>
             </div>
 
-            {/* Scan Line */}
-            <div className="absolute bottom-0 left-0 h-[2px] bg-black w-0 group-hover:w-full transition-all duration-500 ease-out" />
-        </motion.div>
-    );
-};
-
-// Category Section Component
-const CategorySection = ({ categoryName, skills, categoryIndex, columnsPerRow = 4 }) => {
-    // Calculate empty slots needed to fill the rectangle
-    const totalSkills = skills.length;
-    const remainder = totalSkills % columnsPerRow;
-    const emptySlots = remainder === 0 ? 0 : columnsPerRow - remainder;
-
-    // Determine grid columns class based on columnsPerRow
-    const gridColsClass = columnsPerRow === 3
-        ? "grid-cols-2 md:grid-cols-3"
-        : "grid-cols-2 md:grid-cols-4";
-
-    return (
-        <div className="mb-0">
-            {/* Manifest-Style Category Header */}
-            <div className="border-b border-black bg-[#D1D1D1] px-4 py-3">
-                <h3 className="font-mono text-xs md:text-sm tracking-widest uppercase text-black">
-                    // {String(categoryIndex + 1).padStart(2, '0')} : {categoryName.replace('_', ' ')}
-                </h3>
-            </div>
-
-            {/* Skills Grid */}
-            <div className={`grid ${gridColsClass}`}>
-                {skills.map((skill, index) => (
-                    <SkillCell key={skill.id} skill={skill} index={index} />
-                ))}
-
-                {/* Empty Slot Fillers */}
-                {Array.from({ length: emptySlots }).map((_, index) => (
-                    <EmptySlot key={`empty-${categoryName}-${index}`} index={index} />
-                ))}
-            </div>
-        </div>
-    );
-};
-
-// Main Skills Component
-const Skills = () => {
-    return (
-        <section className="bg-[#D1D1D1] py-32 px-0">
-            <div className="max-w-7xl mx-auto px-6 mb-16">
-                {/* Section Title */}
-                <h2 className="font-[900] text-[clamp(2.5rem,8vw,5rem)] leading-[0.9] tracking-[-0.05em] text-black mb-4">
-                    SKILLS
-                </h2>
-                <p className="font-mono text-xs text-black/60 tracking-widest uppercase">
-                    INVENTORY MANIFEST // SYSTEM_V2.0
-                </p>
-            </div>
-
-            {/* Categorized Inventory Grid */}
-            <div className="max-w-7xl mx-auto border-t border-black">
-                {/* LANGUAGES - 4 columns */}
-                <CategorySection
-                    categoryName="LANGUAGES"
-                    skills={skillCategories.LANGUAGES}
-                    categoryIndex={0}
-                    columnsPerRow={4}
-                />
-
-                {/* MACHINE LEARNING - 3 columns */}
-                <CategorySection
-                    categoryName="MACHINE_LEARNING"
-                    skills={skillCategories.MACHINE_LEARNING}
-                    categoryIndex={1}
-                    columnsPerRow={3}
-                />
-
-                {/* VISION ANALYTICS - 4 columns */}
-                <CategorySection
-                    categoryName="VISION_ANALYTICS"
-                    skills={skillCategories.VISION_ANALYTICS}
-                    categoryIndex={2}
-                    columnsPerRow={4}
-                />
-
-                {/* DEPLOYMENT - 3 columns */}
-                <CategorySection
-                    categoryName="DEPLOYMENT"
-                    skills={skillCategories.DEPLOYMENT}
-                    categoryIndex={3}
-                    columnsPerRow={3}
-                />
+            <div className="mt-20 px-[5%] flex justify-between items-end border-t border-black/10 pt-8">
+                <div className="space-y-1">
+                    <p className="font-mono text-[9px] text-black/40 uppercase tracking-widest">
+                        Status: System_Active
+                    </p>
+                    <p className="font-mono text-[9px] text-black/60 max-w-[300px] uppercase leading-relaxed">
+                        Velocity adjusted for deep-packet inspection. <br />
+                        [ TOTAL_COMPETENCIES: {skillData.length} ]
+                    </p>
+                </div>
+                <span className="font-mono text-[9px] text-black/40 italic">
+                    SCAN_REV_3.2.0 // LATENCY: 10MS
+                </span>
             </div>
         </section>
     );
