@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 const navItems = [
-    { name: "OPERATOR PROFILE", id: "about" },
+    { name: "About", id: "about" },
     { name: "EXPERIENCE", id: "experience" },
     { name: "PROJECTS", id: "projects" },
     { name: "SKILLS", id: "skills" },
@@ -42,18 +42,18 @@ const Navbar = () => {
                                 {item.external ? (
                                     <motion.a
                                         href="#"
-                                        whileHover={{ 
+                                        whileHover={{
                                             boxShadow: "4px 4px 0px #000000",
                                             borderColor: "#000000"
                                         }}
-                                        whileTap={{ 
-                                            x: 4, 
-                                            y: 4, 
-                                            boxShadow: "0px 0px 0px #000000" 
+                                        whileTap={{
+                                            x: 4,
+                                            y: 4,
+                                            boxShadow: "0px 0px 0px #000000"
                                         }}
-                                        transition={{ 
-                                            type: "spring", 
-                                            stiffness: 400, 
+                                        transition={{
+                                            type: "spring",
+                                            stiffness: 400,
                                             damping: 25,
                                             tap: { duration: 0.05 }
                                         }}
@@ -64,18 +64,18 @@ const Navbar = () => {
                                 ) : (
                                     <motion.button
                                         onClick={() => scrollToSection(item.id)}
-                                        whileHover={{ 
+                                        whileHover={{
                                             boxShadow: "4px 4px 0px #000000",
                                             borderColor: "#000000"
                                         }}
-                                        whileTap={{ 
-                                            x: 4, 
-                                            y: 4, 
-                                            boxShadow: "0px 0px 0px #000000" 
+                                        whileTap={{
+                                            x: 4,
+                                            y: 4,
+                                            boxShadow: "0px 0px 0px #000000"
                                         }}
-                                        transition={{ 
-                                            type: "spring", 
-                                            stiffness: 400, 
+                                        transition={{
+                                            type: "spring",
+                                            stiffness: 400,
                                             damping: 25,
                                             tap: { duration: 0.05 }
                                         }}

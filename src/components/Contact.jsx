@@ -4,6 +4,10 @@ import { ArrowUpRight } from 'lucide-react';
 import SecureEmail from './SecureEmail';
 
 const Contact = () => {
+    const handleEmail = () => {
+        window.location.href = "mailto:amoghmanjunath2019@gmail.com";
+    };
+
     return (
         <section
             id="contact"
@@ -27,6 +31,7 @@ const Contact = () => {
 
                     <div className="mt-12">
                         <motion.button
+                            onClick={handleEmail}
                             whileHover={{
                                 boxShadow: "4px 4px 0px #000000",
                                 borderColor: "#000000"

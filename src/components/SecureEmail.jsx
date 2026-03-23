@@ -8,13 +8,13 @@ const SecureEmail = () => {
     const user = "amoghmanjunath2019";
     const domain = "gmail.com";
 
-    const handleCopy = (e) => {
+    const handleEmail = (e) => {
         e.preventDefault();
 
         const email = `${user}@${domain}`;
-        navigator.clipboard.writeText(email);
+        window.location.href = `mailto:${email}`;
 
-        setText('// COPIED_TO_CLIPBOARD');
+        setText('// TRANSMISSION_OPENED');
         setCopied(true);
 
         setTimeout(() => {
@@ -25,7 +25,7 @@ const SecureEmail = () => {
 
     return (
         <button
-            onClick={handleCopy}
+            onClick={handleEmail}
             className={`
                 w-full flex-1 flex flex-col justify-center items-center px-8 md:px-12 
                 border-b border-white/20 last:border-b-0 

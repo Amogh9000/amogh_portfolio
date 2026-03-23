@@ -6,10 +6,6 @@ const CustomCursor = () => {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  const springConfig = { damping: 20, stiffness: 500 };
-  const cursorX = useSpring(mouseX, springConfig);
-  const cursorY = useSpring(mouseY, springConfig);
-
   useEffect(() => {
     const moveMouse = (e) => {
       mouseX.set(e.clientX);
@@ -28,10 +24,10 @@ const CustomCursor = () => {
   return (
     <motion.div
       // Hidden on mobile to prevent the "dead cursor" look
-      className="fixed top-0 left-0 w-5 h-5 bg-black rounded-none pointer-events-none z-[9999] hidden md:block mix-blend-difference"
+      className="fixed top-0 left-0 w-5 h-5 bg-white rounded-none pointer-events-none z-[9999] hidden md:block mix-blend-difference"
       style={{
-        x: cursorX,
-        y: cursorY,
+        x: mouseX,
+        y: mouseY,
         translateX: "-50%",
         translateY: "-50%",
         scale: isActive ? 2.2 : 1,
