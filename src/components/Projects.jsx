@@ -59,19 +59,7 @@ ${project.tech.map(t => `> ${t.toUpperCase()}`).join("\n")}
 > SYSTEM ONLINE`;
 
     useEffect(() => {
-        setDisplayedText("");
-        let i = 0;
-
-        // Clear immediately and start typing
-        const intervalId = setInterval(() => {
-            setDisplayedText(fullText.slice(0, i + 1));
-            i++;
-            if (i >= fullText.length) {
-                clearInterval(intervalId);
-            }
-        }, 15); // Fast typing speed
-
-        return () => clearInterval(intervalId);
+        setDisplayedText(fullText); // Show instantly
     }, [fullText]);
 
     return (
@@ -167,18 +155,18 @@ const Projects = () => {
                                     href={hoveredProject.github}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    whileHover={{ 
+                                    whileHover={{
                                         boxShadow: "4px 4px 0px #000000",
                                         borderColor: "#000000"
                                     }}
-                                    whileTap={{ 
-                                        x: 4, 
-                                        y: 4, 
-                                        boxShadow: "0px 0px 0px #000000" 
+                                    whileTap={{
+                                        x: 4,
+                                        y: 4,
+                                        boxShadow: "0px 0px 0px #000000"
                                     }}
-                                    transition={{ 
-                                        type: "spring", 
-                                        stiffness: 400, 
+                                    transition={{
+                                        type: "spring",
+                                        stiffness: 400,
                                         damping: 25,
                                         tap: { duration: 0.05 }
                                     }}

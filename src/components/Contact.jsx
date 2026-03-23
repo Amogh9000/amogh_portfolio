@@ -4,9 +4,6 @@ import { ArrowUpRight } from 'lucide-react';
 import SecureEmail from './SecureEmail';
 
 const Contact = () => {
-    const handleEmail = () => {
-        window.location.href = "mailto:amoghmanjunath2019@gmail.com";
-    };
 
     return (
         <section
@@ -29,30 +26,6 @@ const Contact = () => {
                         LET'S <br /> BUILD <br /> IMPACT
                     </h2>
 
-                    <div className="mt-12">
-                        <motion.button
-                            onClick={handleEmail}
-                            whileHover={{
-                                boxShadow: "4px 4px 0px #000000",
-                                borderColor: "#000000"
-                            }}
-                            whileTap={{
-                                x: 4,
-                                y: 4,
-                                boxShadow: "0px 0px 0px #000000"
-                            }}
-                            transition={{
-                                type: "spring",
-                                stiffness: 400,
-                                damping: 25,
-                                tap: { duration: 0.05 }
-                            }}
-                            className="flex items-center gap-4 border border-transparent bg-transparent px-6 py-3 font-mono text-sm font-bold uppercase tracking-widest group-hover:border-black transition-colors duration-300"
-                        >
-                            <span>INITIATE_HANDSHAKE</span>
-                            <ArrowUpRight strokeWidth={3} />
-                        </motion.button>
-                    </div>
                 </div>
 
                 {/* RIGHT: Link List */}
