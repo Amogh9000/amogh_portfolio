@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import SecureEmail from './SecureEmail';
 
@@ -60,12 +59,15 @@ const Contact = () => {
             </div>
 
             {/* Footer Bar */}
-            <div className="w-full bg-black border-t border-white/20 p-4 flex justify-between items-center text-white/40">
-                <span className="font-mono text-[10px] uppercase font-bold">
-                    © 2026 Amogh M.
+            <div className="relative w-full bg-black border-t border-white/20 py-4 flex justify-between items-center text-white px-6">
+                <span className="font-mono text-[10px] uppercase">
+                    © 2026 AMOGH M.
                 </span>
-                <span className="font-mono text-[10px] uppercase font-bold">
-                    [ BUILD_VER: 2.0.4-STABLE ]
+                <span className="font-mono text-[10px] uppercase absolute left-1/2 -translate-x-1/2">
+                    [ SYSTEM_STATUS: OPERATIONAL ]
+                </span>
+                <span className="font-mono text-[10px] uppercase">
+                    [ BUILD_VFR: 2.0.4-STABLE ]
                 </span>
             </div>
         </section>

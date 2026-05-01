@@ -1,145 +1,306 @@
-import React, { useRef, useEffect } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Sphere, MeshDistortMaterial } from '@react-three/drei';
+import React, { useRef, useMemo, useEffect } from 'react';
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import useRightClickProtection from '../hooks/useRightClickProtection';
+import { useGSAP } from '@gsap/react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
 
-gsap.registerPlugin(ScrollTrigger);
+const letters = "AMOGH M".split("");
 
-// Black Wireframe Sphere for Light Mode
-const BrutalistSphere = () => {
+const WireframeTerrain = () => {
     const meshRef = useRef();
-    useFrame(({ clock }) => {
-        const t = clock.getElapsedTime();
-        if (meshRef.current) {
-            meshRef.current.rotation.x = t * 0.2;
-            meshRef.current.rotation.y = t * 0.3;
+
+    const geometry = useMemo(() => {
+        const geo = new THREE.PlaneGeometry(60, 40, 100, 80);
+        geo.rotateX(-Math.PI / 2);
+
+        const pos = geo.attributes.position;
+        const originalY = new Float32Array(pos.count);
+
+        for (let i = 0; i < pos.count; i++) {
+            const x = pos.getX(i);
+            const z = pos.getZ(i);
+
+            // Create a central valley: high on left/right, flat in middle
+            // x range is roughly -30 to 30
+            const distFromCenter = Math.abs(x);
+            const valleyWidth = 10;
+            let y = 0;
+
+            if (distFromCenter > valleyWidth) {
+                const normalizedDist = (distFromCenter - valleyWidth) / 20;
+                y = Math.pow(normalizedDist, 2) * 25; // Quadratic curve for mountains
+
+                // Add jagged noise to mountain peaks
+                y += Math.sin(x * 0.8) * Math.cos(z * 0.8) * 3 * normalizedDist;
+                y += Math.sin(x * 2.5 + z * 1.5) * 1.2 * normalizedDist;
+            } else {
+                // Subtle floor ripples in the valley
+                y = Math.sin(x * 0.5) * Math.cos(z * 0.5) * 0.2;
+            }
+
+            pos.setY(i, y);
+            originalY[i] = y;
         }
+
+        geo.userData = { originalY };
+        geo.computeVertexNormals();
+        return geo;
+    }, []);
+
+    useFrame((state) => {
+        if (!meshRef.current) return;
+
+        const pos = geometry.attributes.position;
+        const originalY = geometry.userData.originalY;
+        const time = state.clock.getElapsedTime();
+
+        for (let i = 0; i < pos.count; i++) {
+            const x = pos.getX(i);
+            const z = pos.getZ(i);
+            const baseY = originalY[i];
+            const ripple = Math.sin(x * 1.5 + time) * 0.3 + Math.cos(z * 1.5 + time * 0.7) * 0.3;
+            pos.setY(i, baseY + ripple);
+        }
+
+        // eslint-disable-next-line react-hooks/immutability
+        pos.needsUpdate = true;
     });
+
     return (
-        <Sphere args={[1.5, 64, 64]} ref={meshRef} scale={1.8}>
-            <MeshDistortMaterial
-                color="#000000"       // Black
-                emissive="#000000"
-                emissiveIntensity={0}
-                roughness={0}
-                metalness={0.5}
-                distort={0.3}
-                speed={2}
-                wireframe={true}      // Black wires
+        <mesh ref={meshRef} geometry={geometry} position={[0, -2, -5]}>
+            <meshBasicMaterial
+                color="#000000"
+                wireframe={true}
+                transparent={true}
+                opacity={0.4}
+                wireframeLinewidth={0.5}
             />
-        </Sphere>
+        </mesh>
     );
 };
 
+const FLIP_SEQUENCE = " ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-
-const Hero = () => {
-    const sectionRef = useRef(null);
-    const textRef = useRef(null);
-
-    useRightClickProtection(sectionRef);
+const MechanicalLetter = ({ targetChar, index }) => {
+    const tileRef = useRef(null);
+    const frontRef = useRef(null);
+    const isLockedRef = useRef(false);
 
     useEffect(() => {
-        const ctx = gsap.context(() => {
-            // Reveal Text Staggered (Upward slide)
-            gsap.from(".hero-line", {
-                y: 100,
-                opacity: 0,
-                duration: 1.2,
-                stagger: 0.1,
-                ease: "power4.out",
-                delay: 0.2
-            });
+        const front = frontRef.current;
+        const tile = tileRef.current;
+        if (!front || !tile) return;
 
-            // Parallax for Sphere
-            gsap.to(".hero-sphere", {
-                y: 200,
-                scrollTrigger: {
-                    trigger: sectionRef.current,
-                    start: "top top",
-                    end: "bottom top",
-                    scrub: true
+        const normalChar = targetChar === " " ? " " : targetChar.toUpperCase();
+        const targetIdx = FLIP_SEQUENCE.indexOf(normalChar);
+
+        // Start blank
+        front.textContent = "\u00A0";
+        gsap.set(tile, { rotateX: 0 });
+
+        if (targetIdx <= 0) {
+            front.textContent = normalChar === " " ? "\u00A0" : normalChar;
+            isLockedRef.current = true;
+            return;
+        }
+
+        let step = 0;
+        let killed = false;
+
+        // Recursive sequential flip - each step waits for the previous to finish
+        const doFlip = () => {
+            if (killed || step > targetIdx) {
+                if (!killed) isLockedRef.current = true;
+                return;
+            }
+
+            const char = FLIP_SEQUENCE[step];
+
+            gsap.to(tile, {
+                rotateX: -90,
+                duration: 0.022,
+                ease: "power2.in",
+                onComplete: () => {
+                    if (killed) return;
+                    front.textContent = char === " " ? "\u00A0" : char;
+                    gsap.set(tile, { rotateX: 90 });
+                    gsap.to(tile, {
+                        rotateX: 0,
+                        duration: 0.022,
+                        ease: "power2.out",
+                        onComplete: () => {
+                            if (killed) return;
+                            step++;
+                            doFlip();
+                        }
+                    });
                 }
             });
+        };
 
-        }, sectionRef);
+        // Wait for Loader to fully exit (~2000ms), then stagger per tile
+        // Loader: 1500ms count + 200ms hold + ~800ms slide-out = ~2500ms
+        const LOADER_CLEAR_MS = 1900;
+        const t = setTimeout(() => {
+            if (!killed) doFlip();
+        }, LOADER_CLEAR_MS + index * 60);
 
-        return () => ctx.revert();
+        return () => {
+            killed = true;
+            clearTimeout(t);
+            gsap.killTweensOf(tile);
+        };
     }, []);
 
+    const handleMouseMove = (e) => {
+        if (!isLockedRef.current || !tileRef.current) return;
+        const rect = tileRef.current.getBoundingClientRect();
+        const rX = (((e.clientY - rect.top) / rect.height) - 0.5) * -20;
+        const rY = (((e.clientX - rect.left) / rect.width) - 0.5) * 20;
+        gsap.to(tileRef.current, { rotateX: rX, rotateY: rY, duration: 0.3, ease: "power2.out", overwrite: true });
+    };
+
+    const handleMouseEnter = () => {
+        if (!isLockedRef.current || !tileRef.current) return;
+        gsap.to(tileRef.current, { scale: 1.06, boxShadow: "4px 4px 0px 0px #000", duration: 0.2, ease: "power2.out" });
+    };
+
+    const handleMouseLeave = () => {
+        if (!isLockedRef.current || !tileRef.current) return;
+        gsap.to(tileRef.current, { rotateX: 0, rotateY: 0, scale: 1, boxShadow: "0px 0px 0px 0px #000", duration: 0.5, ease: "power4.out", overwrite: true });
+    };
+
     return (
-        <section
-            ref={sectionRef}
-            className="relative h-screen w-full bg-[#D1D1D1] overflow-hidden flex flex-col justify-between border-b border-black"
+        <div
+            className="tile-flap"
+            data-target={targetChar}
+            ref={tileRef}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            onMouseMove={handleMouseMove}
         >
-            {/* Top Grid Bar */}
-            <div className="w-full flex justify-between items-start border-b border-black p-4 z-20">
-                <div className="flex flex-col">
-                    <span className="text-[10px] font-mono font-bold tracking-widest text-black uppercase">
-                        Portfolio_2026
-                    </span>
-                    <span className="text-[10px] font-mono tracking-widest text-black/60 uppercase">
-                        [Ref: Amogh.M]
-                    </span>
-                </div>
-                <div className="text-right">
-                    <span className="text-[10px] font-mono font-bold tracking-widest text-black uppercase animate-pulse">
-                        ● System_Online
-                    </span>
-                </div>
-            </div>
+            <div className="tile-face" ref={frontRef}>&nbsp;</div>
+        </div>
+    );
+};
 
-            {/* Main Content Area */}
-            <div className="relative flex-grow flex items-center justify-center">
+const Hero = () => {
+    const heroGridRef = useRef(null);
+    useGSAP(() => {
 
-                {/* 3D Object Behind Text - Now Black Wireframe on Gray */}
-                <div className="hero-sphere absolute inset-0 z-0 opacity-40">
-                    <Canvas camera={{ position: [0, 0, 6], fov: 45 }}>
-                        <ambientLight intensity={1} />
-                        <pointLight position={[10, 10, 10]} intensity={1.5} />
-                        <BrutalistSphere />
+        // Perspective Zoom on Scroll
+        gsap.to(".terrain-canvas", {
+            scale: 1.5,
+            z: 100,
+            scrollTrigger: {
+                trigger: ".hero-section",
+                start: "top top",
+                end: "bottom top",
+                scrub: true
+            }
+        });
+    }, { scope: heroGridRef });
+
+    return (
+        <>
+            {/* Fixed Global Brutalist Frame */}
+            <div className="fixed inset-0 border border-black pointer-events-none z-50"></div>
+
+            <section className="hero-section relative h-screen w-full bg-[#E5E5E5] overflow-hidden box-border font-mono text-black">
+                <style>{`
+                    .hero-grid {
+                        perspective: 1000px;
+                        margin-top: 60px; /* Offset for Navbar */
+                    }
+
+                    .hero-grid {
+                        perspective: 800px;
+                        margin-top: 60px;
+                    }
+
+                    .tile-flap {
+                        position: relative;
+                        width: 100%;
+                        aspect-ratio: 1/1;
+                        transform-style: preserve-3d;
+                        will-change: transform;
+                        cursor: pointer;
+                    }
+
+                    .tile-face {
+                        position: absolute;
+                        inset: 0;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        background-color: #E5E5E5;
+                        border: 1px solid #000000;
+                        font-family: 'Inter', 'Arial Black', sans-serif;
+                        font-weight: 900;
+                        font-size: 8vw;
+                        color: #000000;
+                        box-sizing: border-box;
+                        user-select: none;
+                        line-height: 1;
+                    }
+
+                    @media (max-width: 768px) {
+                        .tile-face { font-size: 14vw; }
+                        .hero-grid { margin-top: 100px; }
+                    }
+
+                    .marquee-container {
+                        display: flex;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        width: 100%;
+                    }
+
+                    .marquee-content {
+                        display: flex;
+                        animation: marquee 20s linear infinite;
+                    }
+
+                    @keyframes marquee {
+                        0% { transform: translateX(0%); }
+                        100% { transform: translateX(-50%); }
+                    }
+                `}</style>
+
+                {/* Technical Brutalist Corner UI */}
+                <div 
+                    className="absolute text-[10px] sm:text-xs font-bold uppercase z-[100] pointer-events-none"
+                    style={{ top: '20px', left: '24px', backgroundColor: '#E5E5E5', border: '1px solid #000000', padding: '4px 8px' }}
+                >
+                    PORTFOLIO_2026 [REF: AMOGH.M]
+                </div>
+                <div 
+                    className="absolute text-[10px] sm:text-xs font-bold uppercase z-[100] pointer-events-none animate-pulse"
+                    style={{ top: '20px', right: '24px', backgroundColor: '#E5E5E5', border: '1px solid #000000', padding: '4px 8px' }}
+                >
+                    ● SYSTEM_READY
+                </div>
+
+                {/* Background 3D Wireframe Layer */}
+                <div className="terrain-canvas absolute inset-0 z-0 pointer-events-none">
+                    <Canvas camera={{ position: [0, 4, 12], fov: 45 }}>
+                        <WireframeTerrain />
                     </Canvas>
                 </div>
 
-                {/* Massive Typography - Squashed & Tight */}
-                <div className="relative z-10 text-center mix-blend-multiply">
-                    <h1
-                        ref={textRef}
-                        className="flex flex-col items-center justify-center leading-[0.8]"
+                {/* Hero State (Initial) */}
+                <div className="absolute inset-0 flex items-center justify-center z-10 px-4 pointer-events-none">
+                    <div
+                        ref={heroGridRef}
+                        className="hero-grid grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-1 md:gap-2 w-full max-w-4xl pointer-events-auto"
                     >
-                        <span className="hero-line block text-[12vw] font-black tracking-[-0.08em] text-black uppercase"
-                            style={{ transform: "scaleY(1.1)" }}> {/* Squashed effect */}
-                            AMOGH
-                        </span>
-                        <span className="hero-line block text-[12vw] font-black tracking-[-0.08em] text-black uppercase"
-                            style={{ transform: "scaleY(1.1)" }}>
-                            MANJUNATH
-                        </span>
-                    </h1>
+                        {letters.map((char, i) => (
+                            <MechanicalLetter key={i} targetChar={char} index={i} />
+                        ))}
+                    </div>
                 </div>
-            </div>
-
-            {/* Bottom Grid Bar */}
-            <div className="w-full grid grid-cols-3 border-t border-black z-20">
-                <div className="border-r border-black p-4 flex items-center justify-center hover:bg-black hover:text-white transition-colors duration-200 cursor-pointer group">
-                    <span className="text-xs font-mono font-bold tracking-widest uppercase">
-                        Scroll_Down ↓
-                    </span>
-                </div>
-                <div className="border-r border-black p-4 flex items-center justify-center hover:bg-black hover:text-white transition-colors duration-200 cursor-pointer">
-                    <span className="text-xs font-mono font-bold tracking-widest uppercase">
-                        Full_Stack
-                    </span>
-                </div>
-                <div className="p-4 flex items-center justify-center hover:bg-black hover:text-white transition-colors duration-200 cursor-pointer">
-                    <span className="text-xs font-mono font-bold tracking-widest uppercase">
-                        Data_Sci
-                    </span>
-                </div>
-            </div>
-        </section>
+            </section>
+        </>
     );
 };
 

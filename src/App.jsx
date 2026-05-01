@@ -22,7 +22,7 @@ const App = () => {
         <main className="bg-black min-h-screen text-white w-full overflow-hidden">
           <Hero />
 
-          <SectionDivider text="INTELLIGENCE • SYSTEMS • DATA • " />
+          <SectionDivider text="INTELLIGENCE • SYSTEMS • DATA • AGENTIC_AI • " />
 
           <About />
 

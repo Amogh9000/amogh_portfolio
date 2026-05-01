@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 const SecureEmail = () => {
-    const [text, setText] = useState('[ INITIATE_HANDSHAKE ]');
+    const [text, setText] = useState('[ Ping Me ]');
     const [copied, setCopied] = useState(false);
 
     // Email parts to avoid scraper detection
@@ -18,7 +18,7 @@ const SecureEmail = () => {
         setCopied(true);
 
         setTimeout(() => {
-            setText('[ INITIATE_HANDSHAKE ]');
+            setText('[ Ping Me ]');
             setCopied(false);
         }, 3000);
     };
