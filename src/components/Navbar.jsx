@@ -3,11 +3,10 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const navItems = [
-    { name: "About", id: "about" },
+    { name: "ABOUT", id: "about" },
+    { name: "SKILLS", id: "skills" },
     { name: "EXPERIENCE", id: "experience" },
     { name: "PROJECTS", id: "projects" },
-    { name: "SKILLS", id: "skills" },
-    { name: "CERTIFICATIONS", id: "certifications" },
     { name: "CONTACT", id: "contact" }
 ];
 
@@ -176,3 +175,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

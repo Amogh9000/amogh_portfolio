@@ -28,7 +28,7 @@ const SectionDivider = ({ text = "EXPLORE • CREATE • INNOVATE • ", directi
     }, [direction]);
 
     return (
-        <div className="relative py-12 overflow-hidden bg-black flex flex-col items-center justify-center border-t border-b border-white/20">
+        <div className="relative z-20 py-12 overflow-hidden bg-black flex flex-col items-center justify-center border-t border-b border-white/20">
             <div className="relative w-full overflow-hidden whitespace-nowrap">
                 <div
                     ref={marqueeRef}

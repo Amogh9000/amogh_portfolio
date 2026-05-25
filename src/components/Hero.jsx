@@ -267,19 +267,6 @@ const Hero = () => {
                     }
                 `}</style>
 
-                {/* Technical Brutalist Corner UI */}
-                <div 
-                    className="absolute text-[10px] sm:text-xs font-bold uppercase z-[100] pointer-events-none"
-                    style={{ top: '20px', left: '24px', backgroundColor: '#E5E5E5', border: '1px solid #000000', padding: '4px 8px' }}
-                >
-                    PORTFOLIO_2026 [REF: AMOGH.M]
-                </div>
-                <div 
-                    className="absolute text-[10px] sm:text-xs font-bold uppercase z-[100] pointer-events-none animate-pulse"
-                    style={{ top: '20px', right: '24px', backgroundColor: '#E5E5E5', border: '1px solid #000000', padding: '4px 8px' }}
-                >
-                    ● SYSTEM_READY
-                </div>
 
                 {/* Background 3D Wireframe Layer */}
                 <div className="terrain-canvas absolute inset-0 z-0 pointer-events-none">
