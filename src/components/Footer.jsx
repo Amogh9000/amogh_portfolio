@@ -31,7 +31,7 @@ const Footer = () => {
             {/* ── MIDDLE: Massive Full-Bleed Action Callout ── */}
             <div className="w-full border-b border-white/[0.06]">
                 <a
-                    href="mailto:amoghm4507@gmail.com"
+                    href="mailto:amoghmanjunath2019@gmail.com"
                     className="group/cta block w-full px-6 md:px-12 lg:px-24 py-12 md:py-20 bg-black hover:bg-white transition-colors duration-300 cursor-pointer"
                 >
                     <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
