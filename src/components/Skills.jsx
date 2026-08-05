@@ -2,29 +2,52 @@ import React, { useState } from "react";
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import {
-    SiPython, SiTensorflow, SiOpencv, SiStreamlit, SiMysql, SiFastapi, SiC, SiR,
-    SiScikitlearn, SiTableau
+    SiPython, SiTensorflow, SiOpencv, SiStreamlit, SiMysql, SiFastapi, SiR,
+    SiScikitlearn, SiTableau, SiPytorch, SiDocker, SiAmazon, SiNumpy,
+    SiPandas, SiHuggingface
 } from "react-icons/si";
-import { TbBrandPython, TbChartBar, TbDatabase } from "react-icons/tb";
-import { FaBrain, FaRocket, FaEye, FaList, FaTimes } from "react-icons/fa";
+import { TbChartBar, TbDatabase, TbChartHistogram } from "react-icons/tb";
+import { FaBrain, FaRocket, FaEye, FaList, FaTimes, FaCloud, FaCode, FaChartLine } from "react-icons/fa";
+import { MdOutlineSchema } from "react-icons/md";
 
 const skillData = [
-    { id: "L01", name: "PYTHON", icon: SiPython },
-    { id: "L02", name: "SQL", icon: SiMysql },
-    { id: "L03", name: "C", icon: SiC },
-    { id: "L04", name: "R", icon: SiR },
-    { id: "AI01", name: "DEEP LEARNING", icon: FaBrain },
-    { id: "AI02", name: "TENSORFLOW", icon: SiTensorflow },
-    { id: "AI03", name: "SCIKIT-LEARN", icon: SiScikitlearn },
-    { id: "AI04", name: "LLMS", icon: TbBrandPython },
-    { id: "AI05", name: "RAG ARCHITECTURE", icon: TbDatabase },
-    { id: "AI06", name: "AGENTIC WORKFLOWS", icon: FaRocket },
-    { id: "VA01", name: "OPENCV", icon: SiOpencv },
-    { id: "VA02", name: "LOG-MEL SPECS", icon: TbChartBar },
-    { id: "VA03", name: "FEATURE EXT.", icon: FaEye },
-    { id: "BO01", name: "FASTAPI", icon: SiFastapi },
-    { id: "BO02", name: "STREAMLIT", icon: SiStreamlit },
-    { id: "BO03", name: "TABLEAU", icon: SiTableau }
+    // ── Languages ──
+    { id: "L01", name: "PYTHON",     icon: SiPython },
+    { id: "L02", name: "SQL",        icon: SiMysql },
+    { id: "L03", name: "R",          icon: SiR },
+
+    // ── ML / DL ──
+    { id: "ML01", name: "PYTORCH",       icon: SiPytorch },
+    { id: "ML02", name: "TENSORFLOW",    icon: SiTensorflow },
+    { id: "ML03", name: "SCIKIT-LEARN",  icon: SiScikitlearn },
+    { id: "ML04", name: "XGBOOST",       icon: FaChartLine },
+    { id: "ML05", name: "HUGGING FACE",  icon: SiHuggingface },
+    { id: "ML06", name: "OPENCV",        icon: SiOpencv },
+    { id: "ML07", name: "DEEP LEARNING", icon: FaBrain },
+
+    // ── Gen AI ──
+    { id: "AI01", name: "LLMs",              icon: FaBrain },
+    { id: "AI02", name: "RAG",               icon: TbDatabase },
+    { id: "AI03", name: "AGENTIC WORKFLOWS", icon: FaRocket },
+    { id: "AI04", name: "VECTOR DBs",        icon: MdOutlineSchema },
+    { id: "AI05", name: "PROMPT ENG.",       icon: FaCode },
+
+    // ── Data & Signal ──
+    { id: "DS01", name: "NUMPY",          icon: SiNumpy },
+    { id: "DS02", name: "PANDAS",         icon: SiPandas },
+    { id: "DS03", name: "LOG-MEL SPECS",  icon: TbChartBar },
+    { id: "DS04", name: "FEATURE ENG.",   icon: FaEye },
+
+    // ── Deployment ──
+    { id: "DE01", name: "FASTAPI",   icon: SiFastapi },
+    { id: "DE02", name: "DOCKER",    icon: SiDocker },
+    { id: "DE03", name: "AWS",       icon: SiAmazon },
+    { id: "DE04", name: "STREAMLIT", icon: SiStreamlit },
+
+    // ── Viz ──
+    { id: "VZ01", name: "TABLEAU",   icon: SiTableau },
+    { id: "VZ02", name: "POWER BI",  icon: TbChartHistogram },
+    { id: "VZ03", name: "CLOUD OPS", icon: FaCloud },
 ];
 
 const SkillItem = ({ item }) => {
@@ -32,7 +55,6 @@ const SkillItem = ({ item }) => {
 
     const handleActive = () => {
         setIsFilled(true);
-        // Custom event to tell the Portfolio cursor to expand
         window.dispatchEvent(new Event("portfolio-node-active"));
     };
 
@@ -47,12 +69,10 @@ const SkillItem = ({ item }) => {
             onMouseLeave={handleInactive}
             onTouchStart={handleActive}
             onTouchEnd={handleInactive}
-            // Fixed: responsive padding to prevent the overlap seen in mobile viewports
             className="flex items-center px-6 md:px-16 group cursor-none select-none h-full touch-none"
         >
             <item.icon className={`text-2xl md:text-4xl mr-4 md:mr-6 transition-colors duration-300 ${isFilled ? 'text-white' : 'text-black'}`} />
             <span
-                // Fixed: Adjusted font-size (8vw for mobile) to prevent text stacking
                 className="text-[8vw] md:text-[6vw] font-black uppercase tracking-tighter transition-all duration-300"
                 style={{
                     WebkitTextStroke: "1px black",
@@ -71,7 +91,6 @@ const SkillItem = ({ item }) => {
 const MarqueeRow = ({ items, direction = 1, baseSpeed = 40 }) => {
     const [rowHovered, setRowHovered] = useState(false);
 
-    // REFRESHED: Mobile needs faster speed values because the distance (50%) is smaller
     const responsiveSpeed = typeof window !== 'undefined' && window.innerWidth < 768
         ? baseSpeed * 0.5
         : baseSpeed;
@@ -92,7 +111,6 @@ const MarqueeRow = ({ items, direction = 1, baseSpeed = 40 }) => {
                 }}
                 className="flex"
             >
-                {/* REFRESHED: Tripling items ensures no white-space gaps on high-res mobile screens */}
                 {[...items, ...items, ...items].map((item, index) => (
                     <SkillItem key={index} item={item} />
                 ))}
@@ -103,6 +121,11 @@ const MarqueeRow = ({ items, direction = 1, baseSpeed = 40 }) => {
 
 const Skills = () => {
     const [showList, setShowList] = useState(false);
+
+    // Split into rows for marquee
+    const row1 = skillData.slice(0, 9);
+    const row2 = skillData.slice(9, 18);
+    const row3 = skillData.slice(18);
 
     return (
         <section id="skills" className="w-full bg-[#D1D1D1] py-20 overflow-hidden relative min-h-screen">
@@ -129,9 +152,9 @@ const Skills = () => {
                 <AnimatePresence mode="wait">
                     {!showList ? (
                         <motion.div key="marquee" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                            <MarqueeRow items={skillData.slice(0, 6)} direction={1} baseSpeed={50} />
-                            <MarqueeRow items={skillData.slice(6, 11)} direction={-1} baseSpeed={60} />
-                            <MarqueeRow items={skillData.slice(11)} direction={1} baseSpeed={45} />
+                            <MarqueeRow items={row1} direction={1}  baseSpeed={50} />
+                            <MarqueeRow items={row2} direction={-1} baseSpeed={60} />
+                            <MarqueeRow items={row3} direction={1}  baseSpeed={45} />
                         </motion.div>
                     ) : (
                         <motion.div
@@ -142,8 +165,8 @@ const Skills = () => {
                             className="px-[5%] grid grid-cols-1 md:grid-cols-3 gap-1"
                         >
                             {skillData.map((skill) => (
-                                <div key={skill.id} className="border border-black/10 p-10 flex items-center justify-between bg-black/5 hover:bg-black group transition-all duration-300">
-                                    <div className="flex items-center gap-6">
+                                <div key={skill.id} className="border border-black/10 p-8 flex items-center justify-between bg-black/5 hover:bg-black group transition-all duration-300">
+                                    <div className="flex items-center gap-5">
                                         <skill.icon className="text-3xl text-black group-hover:text-white transition-colors" />
                                         <span className="font-mono text-sm font-black uppercase text-black group-hover:text-white tracking-tighter">
                                             {skill.name}
@@ -170,7 +193,7 @@ const Skills = () => {
                     </p>
                 </div>
                 <span className="font-mono text-[9px] text-black/40 italic">
-                    SCAN_REV_3.2.0 // LATENCY: 10MS
+                    SCAN_REV_4.0.0 // LATENCY: 10MS
                 </span>
             </div>
         </section>

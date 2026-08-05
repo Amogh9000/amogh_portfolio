@@ -11,19 +11,20 @@ const SectionDivider = ({ text = "EXPLORE • CREATE • INNOVATE • ", directi
         const marquee = marqueeRef.current;
         const moveDistance = direction === "left" ? "-20%" : "20%";
 
-        gsap.to(marquee, {
-            x: moveDistance,
-            ease: "none",
-            scrollTrigger: {
-                trigger: marquee.parentNode,
-                start: "top bottom",
-                end: "bottom top",
-                scrub: 0.5,
-            }
+        const st = ScrollTrigger.create({
+            trigger: marquee.parentNode,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 0.5,
+            animation: gsap.to(marquee, {
+                x: moveDistance,
+                ease: "none",
+                paused: true,
+            }),
         });
 
         return () => {
-            ScrollTrigger.getAll().forEach(t => t.kill());
+            st.kill();
         };
     }, [direction]);
 

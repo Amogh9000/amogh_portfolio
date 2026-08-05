@@ -10,7 +10,8 @@ const WireframeTerrain = () => {
     const meshRef = useRef();
 
     const geometry = useMemo(() => {
-        const geo = new THREE.PlaneGeometry(60, 40, 100, 80);
+        // Reduced from (100,80) to (40,30) — ~85% fewer vertices, same visual effect
+        const geo = new THREE.PlaneGeometry(60, 40, 40, 30);
         geo.rotateX(-Math.PI / 2);
 
         const pos = geo.attributes.position;
@@ -21,20 +22,17 @@ const WireframeTerrain = () => {
             const z = pos.getZ(i);
 
             // Create a central valley: high on left/right, flat in middle
-            // x range is roughly -30 to 30
             const distFromCenter = Math.abs(x);
             const valleyWidth = 10;
             let y = 0;
 
             if (distFromCenter > valleyWidth) {
                 const normalizedDist = (distFromCenter - valleyWidth) / 20;
-                y = Math.pow(normalizedDist, 2) * 25; // Quadratic curve for mountains
+                y = Math.pow(normalizedDist, 2) * 25;
 
-                // Add jagged noise to mountain peaks
                 y += Math.sin(x * 0.8) * Math.cos(z * 0.8) * 3 * normalizedDist;
                 y += Math.sin(x * 2.5 + z * 1.5) * 1.2 * normalizedDist;
             } else {
-                // Subtle floor ripples in the valley
                 y = Math.sin(x * 0.5) * Math.cos(z * 0.5) * 0.2;
             }
 
@@ -47,23 +45,25 @@ const WireframeTerrain = () => {
         return geo;
     }, []);
 
+    // Cache pos attribute and originalY outside the frame loop
+    const posAttr = useMemo(() => geometry.attributes.position, [geometry]);
+    const originalY = useMemo(() => geometry.userData.originalY, [geometry]);
+
     useFrame((state) => {
         if (!meshRef.current) return;
 
-        const pos = geometry.attributes.position;
-        const originalY = geometry.userData.originalY;
         const time = state.clock.getElapsedTime();
+        const count = posAttr.count;
 
-        for (let i = 0; i < pos.count; i++) {
-            const x = pos.getX(i);
-            const z = pos.getZ(i);
+        for (let i = 0; i < count; i++) {
+            const x = posAttr.getX(i);
+            const z = posAttr.getZ(i);
             const baseY = originalY[i];
             const ripple = Math.sin(x * 1.5 + time) * 0.3 + Math.cos(z * 1.5 + time * 0.7) * 0.3;
-            pos.setY(i, baseY + ripple);
+            posAttr.setY(i, baseY + ripple);
         }
 
-        // eslint-disable-next-line react-hooks/immutability
-        pos.needsUpdate = true;
+        posAttr.needsUpdate = true;
     });
 
     return (

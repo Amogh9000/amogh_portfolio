@@ -12,7 +12,7 @@ const About = () => {
         const textElement = textRef.current;
 
         // Simple parallax or reveal effect on scroll
-        gsap.fromTo(textElement,
+        const tween = gsap.fromTo(textElement,
             { y: 50, opacity: 0 },
             {
                 y: 0,
@@ -28,7 +28,8 @@ const About = () => {
         );
 
         return () => {
-            ScrollTrigger.getAll().forEach(t => t.kill());
+            tween.scrollTrigger?.kill();
+            tween.kill();
         };
     }, []);
 
