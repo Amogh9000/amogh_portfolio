@@ -25,13 +25,22 @@ const Footer = () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
+    const handleContactClick = (e) => {
+        e.preventDefault();
+        // Basic obfuscation to prevent basic scraping and console logging of the raw string
+        const user = "amoghmanjunath2019";
+        const domain = "gmail.com";
+        window.location.href = `mailto:${user}@${domain}`;
+    };
+
     return (
         <footer id="contact" className="relative w-full min-h-[75vh] bg-black text-white flex flex-col justify-between selection:bg-[#D1D1D1] selection:text-black overflow-hidden">
 
             {/* ── MIDDLE: Massive Full-Bleed Action Callout ── */}
             <div className="w-full border-b border-white/[0.06]">
                 <a
-                    href="mailto:amoghmanjunath2019@gmail.com"
+                    href="#"
+                    onClick={handleContactClick}
                     className="group/cta block w-full px-6 md:px-12 lg:px-24 py-12 md:py-20 bg-black hover:bg-white transition-colors duration-300 cursor-pointer"
                 >
                     <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">

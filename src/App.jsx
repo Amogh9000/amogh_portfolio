@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import About from './components/About';
@@ -10,8 +10,23 @@ import SmoothScroll from './components/SmoothScroll';
 import SectionDivider from './components/SectionDivider';
 import Loader from './components/Loader';
 import CustomCursor from './components/CustomCursor';
+import { playClickSound } from './utils/audio';
 
 const App = () => {
+  useEffect(() => {
+    // Global event delegation for UI sounds
+    const handleMouseDown = (e) => {
+      if (e.target.closest('a, button, [role="button"]')) {
+        playClickSound();
+      }
+    };
+
+    document.addEventListener('mousedown', handleMouseDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handleMouseDown);
+    };
+  }, []);
   return (
     <>
       <CustomCursor />

@@ -4,20 +4,38 @@ import gsap from "gsap";
 // Project Data expanded with Dashboard Telemetry
 const projects = [
     {
-        id: "GridSentinel",
-        title: "GridSentinel",
-        category: "AI_SYSTEMS",
-        metricValue: "94.2%",
-        metricLabel: "DETECTION ACCURACY",
-        subLabel: "GIS_CONTEXT // EXPLAINABLE_ML",
-        description: "An edge-AI anomaly detection system for urban power grids. Uses explainable machine learning architectures and GIS context to identify structural and electrical failures before they escalate.",
-        tech: ["Python", "Machine Learning", "Edge-AI", "GIS"],
-        github: "https://github.com/Amogh9000/GridSentinel",
+        id: "Wayspeak",
+        title: "WAYSPEAK",
+        category: "EDTECH_GAMIFIED",
+        metricValue: "LMS",
+        metricLabel: "LEARNING MANAGEMENT",
+        subLabel: "LANGUAGE_LEARNING // GAMIFICATION",
+        description: "A gamified language-learning application featuring a skill path, arcade-style UI, hearts/coins economy, leaderboards, and a customizable 2D mascot. Built with a full-stack architecture.",
+        tech: ["Next.js 14", "FastAPI", "SQLite", "Framer Motion"],
+        github: "https://github.com/Amogh9000/linguapath",
+        live: "https://linguapath-kappa.vercel.app/",
         params: [
-            { key: "CORE_ENGINE", val: "EXPLAINABLE ML (XAI) PIPELINE" },
-            { key: "SPATIAL_AWARENESS", val: "GIS GEOSPATIAL VECTOR MAPS" },
-            { key: "HARDWARE_TARGET", val: "URBAN GRID EDGE-AI NODES" },
-            { key: "TELEMETRY_STATUS", val: "OPERATIONAL // SYSTEM_SAFE" }
+            { key: "FRONTEND_STACK", val: "NEXT.JS APP ROUTER // ZUSTAND" },
+            { key: "BACKEND_ENGINE", val: "FASTAPI + ASYNC SQLALCHEMY" },
+            { key: "PROGRESSION_SYS", val: "SKILL TREES // ECONOMY" },
+            { key: "UI_ARCHITECTURE", val: "ARCADE-STYLE // GSAP" }
+        ]
+    },
+    {
+        id: "Auraops",
+        title: "AURAOPS",
+        category: "ENTERPRISE_HEALTHCARE",
+        metricValue: "TRI-DB",
+        metricLabel: "MULTI-DB ARCHITECTURE",
+        subLabel: "OPERATIONAL_INTELLIGENCE // HOSPITAL_COCKPIT",
+        description: "An enterprise-grade hospital operations cockpit replacing 'black-box' AI with transparent, database-driven operational intelligence across PostgreSQL, MongoDB, and Neo4j.",
+        tech: ["FastAPI", "React", "Neo4j", "PostgreSQL", "MongoDB"],
+        github: "https://github.com/Amogh9000/Auraops",
+        params: [
+            { key: "DATA_ARCHITECTURE", val: "POSTGRES // MONGO // NEO4J" },
+            { key: "GRAPH_TRACING", val: "NEO4J INFECTION CONTROL" },
+            { key: "SUPPLY_INTELLIGENCE", val: "REAL-TIME TRACKING ENGINE" },
+            { key: "SECURITY_PROTOCOL", val: "STATELESS JWT (HS256)" }
         ]
     },
     {
@@ -206,17 +224,29 @@ const Projects = () => {
                             </div>
                         ))}
 
-                        {/* GitHub Action Trigger */}
-                        {activeProject.github !== "#" && (
-                            <a
-                                href={activeProject.github}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="project-telemetry-reveal w-full block text-center py-3.5 mt-4 border-2 border-black font-mono font-bold text-xs uppercase tracking-widest bg-black text-[#D1D1D1] hover:bg-[#E5E5E5] hover:text-black transition-colors shadow-[4px_4px_0px_#000000] hover:shadow-none translate-y-0 active:translate-y-[2px]"
-                            >
-                                // ACCESS_SOURCE_CODE (GITHUB)
-                            </a>
-                        )}
+                        {/* Action Triggers */}
+                        <div className="flex gap-4 mt-4">
+                            {activeProject.github && activeProject.github !== "#" && (
+                                <a
+                                    href={activeProject.github}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="project-telemetry-reveal flex-1 block text-center py-3.5 border-2 border-black font-mono font-bold text-xs uppercase tracking-widest bg-black text-[#D1D1D1] hover:bg-[#E5E5E5] hover:text-black transition-colors shadow-[4px_4px_0px_#000000] hover:shadow-none translate-y-0 active:translate-y-[2px]"
+                                >
+                                    // SOURCE_CODE
+                                </a>
+                            )}
+                            {activeProject.live && activeProject.live !== "#" && (
+                                <a
+                                    href={activeProject.live}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="project-telemetry-reveal flex-1 block text-center py-3.5 border-2 border-black font-mono font-bold text-xs uppercase tracking-widest bg-[#E5E5E5] text-black hover:bg-black hover:text-[#D1D1D1] transition-colors shadow-[4px_4px_0px_#000000] hover:shadow-none translate-y-0 active:translate-y-[2px]"
+                                >
+                                    // LIVE_SYSTEM
+                                </a>
+                            )}
+                        </div>
                     </div>
                 </div>
 

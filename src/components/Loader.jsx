@@ -1,63 +1,81 @@
-import React, { useState, useEffect } from 'react';
-// eslint-disable-next-line no-unused-vars
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useRef } from 'react';
+import gsap from 'gsap';
 
 const Loader = () => {
   const [progress, setProgress] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const loaderRef = useRef(null);
+  const textContainerRef = useRef(null);
 
   useEffect(() => {
-    // 1.5 seconds to reach 100.
-    // Let's update every 15ms. That's 100 updates.
-    // 15ms * 100 = 1500ms
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          return 100;
-        }
-        return prev + 1;
-      });
-    }, 15);
-
-    return () => clearInterval(interval);
+    // Animate the progress value from 0 to 100
+    const progressObj = { value: 0 };
+    
+    gsap.to(progressObj, {
+      value: 100,
+      duration: 2.2,
+      ease: "power3.inOut",
+      onUpdate: () => {
+        setProgress(Math.round(progressObj.value));
+      },
+      onComplete: () => {
+        // Exit animation sequence
+        const tl = gsap.timeline();
+        
+        tl.to(textContainerRef.current, {
+          scale: 1.1,
+          opacity: 0,
+          duration: 0.5,
+          ease: "power3.in"
+        })
+        .to(loaderRef.current, {
+          yPercent: -100,
+          duration: 0.9,
+          ease: "expo.inOut"
+        }, "-=0.2")
+        .set(loaderRef.current, { display: "none" });
+      }
+    });
   }, []);
 
-  useEffect(() => {
-    if (progress === 100) {
-      // Once at 100%, wait 200ms, then trigger out animation
-      const timeout = setTimeout(() => {
-        setIsLoading(false);
-      }, 200);
-      return () => clearTimeout(timeout);
-    }
-  }, [progress]);
-
   return (
-    <AnimatePresence>
-      {isLoading && (
-        <motion.div
-          initial={{ y: 0 }}
-          exit={{ y: '-100%' }}
-          transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
-          className="fixed inset-0 z-[999] flex flex-col justify-center items-center pointer-events-auto"
-          style={{ backgroundColor: '#D1D1D1' }}
+    <div 
+      ref={loaderRef} 
+      className="fixed inset-0 z-[999] bg-[#0A0A0A] flex flex-col justify-center items-center pointer-events-auto"
+    >
+      <div ref={textContainerRef} className="relative flex items-end justify-center">
+        {/* Outline Background Text */}
+        <div 
+          className="text-[25vw] md:text-[18rem] font-[900] leading-none tracking-tighter"
+          style={{ 
+             WebkitTextStroke: '2px rgba(209, 209, 209, 0.2)',
+             color: 'transparent',
+             fontFamily: '"Inter Tight", sans-serif'
+          }}
         >
-          <div
-            className="text-[12vw] md:text-[8rem] text-black leading-none tracking-tighter"
-            style={{ fontFamily: '"Inter Tight", sans-serif', fontWeight: 900 }}
-          >
-            [ {progress.toString().padStart(2, '0')}% ]
-          </div>
-          <div
-            className="absolute bottom-6 left-6 text-xs text-black/60"
-            style={{ fontFamily: '"Space Mono", monospace' }}
-          >
-            // INITIATING_SYSTEM
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          {progress.toString().padStart(2, '0')}
+        </div>
+        
+        {/* Solid Foreground Text with Clip Path Fill */}
+        <div 
+          className="absolute inset-0 flex items-end justify-center text-[25vw] md:text-[18rem] font-[900] leading-none tracking-tighter text-[#D1D1D1]"
+          style={{
+             clipPath: `inset(${100 - progress}% 0 0 0)`,
+             fontFamily: '"Inter Tight", sans-serif'
+          }}
+        >
+          {progress.toString().padStart(2, '0')}
+        </div>
+        
+        <span className="text-2xl md:text-5xl font-bold ml-2 mb-[4vw] md:mb-10 text-[#D1D1D1]">
+          %
+        </span>
+      </div>
+
+      <div className="absolute bottom-8 font-mono text-[10px] md:text-xs font-bold text-[#D1D1D1]/40 uppercase tracking-widest flex justify-between w-full px-12">
+        <span>// INITIATING_SYSTEM</span>
+        <span>AURA_ENGINE_V1</span>
+      </div>
+    </div>
   );
 };
 
