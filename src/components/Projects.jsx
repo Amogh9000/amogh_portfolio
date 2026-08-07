@@ -4,6 +4,23 @@ import gsap from "gsap";
 // Project Data expanded with Dashboard Telemetry
 const projects = [
     {
+        id: "KSP",
+        title: "KSP CRIME INTEL",
+        category: "LAW_ENFORCEMENT_AI",
+        metricValue: "RAG",
+        metricLabel: "CRIMINAL INTELLIGENCE",
+        subLabel: "HYBRID_RAG // BILINGUAL_INTEL // ANALYTICS",
+        description: "An end-to-end criminal intelligence & analytics platform built for the Karnataka State Police (KSP). Features a 3-column command dashboard, bilingual Kannada/English support, automated intent routing, spatial incident heatmaps, suspect dossier management, and a hybrid RAG query engine.",
+        tech: ["Next.js 16", "FastAPI", "React 19", "Tailwind CSS v4", "PostgreSQL", "pgvector", "Leaflet"],
+        github: "https://github.com/Amogh9000/ksp",
+        params: [
+            { key: "RAG_ENGINE", val: "HYBRID (FAST IN-MEMORY + PGVECTOR)" },
+            { key: "INTENT_ROUTER", val: "CLASSIFIER (LOOKUP/PATTERN/PREDICT/NETWORK)" },
+            { key: "SPATIAL_ANALYTICS", val: "LEAFLET HEATMAP + DISPATCH SIMULATION" },
+            { key: "CROSS_LINGUAL", val: "BILINGUAL (KANNADA / ENGLISH) TRANSLATION" }
+        ]
+    },
+    {
         id: "Wayspeak",
         title: "WAYSPEAK",
         category: "EDTECH_GAMIFIED",
@@ -13,7 +30,6 @@ const projects = [
         description: "A gamified language-learning application featuring a skill path, arcade-style UI, hearts/coins economy, leaderboards, and a customizable 2D mascot. Built with a full-stack architecture.",
         tech: ["Next.js 14", "FastAPI", "SQLite", "Framer Motion"],
         github: "https://github.com/Amogh9000/linguapath",
-        live: "https://linguapath-kappa.vercel.app/",
         params: [
             { key: "FRONTEND_STACK", val: "NEXT.JS APP ROUTER // ZUSTAND" },
             { key: "BACKEND_ENGINE", val: "FASTAPI + ASYNC SQLALCHEMY" },
