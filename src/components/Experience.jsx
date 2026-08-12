@@ -1,334 +1,146 @@
-import React, { useEffect, useRef, useState } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-// eslint-disable-next-line no-unused-vars
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
 
-gsap.registerPlugin(ScrollTrigger);
-
-const roadmapData = [
-    {
-        id: "samsung",
-        nodeId: "NODE_01",
-        company: "SAMSUNG R&D INSTITUTE INDIA",
-        location: "BANGALORE",
-        role: "RESEARCH INTERN — SAMSUNG PRISM",
-        period: "JAN 2026 — JUL 2026",
-        status: "COMPLETED",
-        metrics: [
-            { label: "PIPELINE",    value: "KD: TRANSFORMER → CNN" },
-            { label: "COMPRESSION", value: "INT8 QUANTIZATION — 2.8MB" },
-            { label: "SPEEDUP",     value: "2× INFERENCE BOOST" },
-            { label: "INFRA",       value: "PYTORCH // MODAL // CLOUD" },
-        ],
-        desc: "Engineered an edge-deployed audio classification system using knowledge distillation (transformer teacher → lightweight CNN student) for real-time acoustic event detection. Applied static INT8 quantization to cut model footprint by ~85% (to 2.8 MB) and boost inference speed by over 2×. Built cloud training and validation infrastructure using PyTorch, Modal, and custom benchmarking interfaces.",
-        tags: ["EDGE_AI", "KNOWLEDGE_DISTILLATION", "MODEL_COMPRESSION", "PYTORCH"],
-    },
-    {
-        id: "edunet",
-        nodeId: "NODE_02",
-        company: "EDUNET FOUNDATION",
-        location: "REMOTE",
-        role: "AI/ML INTERN",
-        period: "JUN 2025 — JUL 2025",
-        status: "COMPLETED",
-        metrics: [
-            { label: "DATASET",  value: "48K_RECORDS" },
-            { label: "PIPELINE", value: "SMOTE" },
-            { label: "MODEL",    value: "GRADIENT_BOOSTING" },
-            { label: "ACCURACY", value: "86%" },
-        ],
-        desc: "Worked on large-scale dataset preprocessing and model optimisation for healthcare applications. Applied SMOTE to balance class distributions. Fine-tuned Gradient Boosting models achieving 86% accuracy. Implemented Responsible AI practices to ensure model fairness.",
-        tags: ["HEALTHCARE_AI", "ML_OPS", "RESPONSIBLE_AI", "XGBOOST"],
-    },
+// Sample dataset structured for engineering roles
+const EXPERIENCE_DATA = [
+  {
+    id: "samsung",
+    roleTitle: "Research & Development Intern",
+    company: "Samsung PRISM",
+    location: "BANGALORE, IN",
+    period: "// JAN 2026 - JUL 2026",
+    narrative:
+      "Engineered an edge-deployed acoustic intelligence system built for real-time sound event classification. By leveraging knowledge distillation to compress large vision-transformer models into lightweight CNN students, the pipeline achieved high-fidelity inference under strict edge resource constraints.",
+    achievements: [
+      "Achieved 2.8× faster inference speed on edge target hardware via static INT8 quantization.",
+      "Cut model parameter footprint by 85% down to 2.8 MB without degrading top-1 classification accuracy.",
+      "Architected cloud benchmarking and automated evaluation pipelines using PyTorch and Modal infrastructure.",
+    ],
+    techStack: "FASTAPI · PYTHON · YAMNet · PYTORCH · INT8 QUANTIZATION · MODAL",
+  },
+  {
+    id: "edunet",
+    roleTitle: "AI / Machine Learning Intern",
+    company: "Edunet Foundation",
+    location: "REMOTE",
+    period: "// JUN 2025 - JUL 2025",
+    narrative:
+      "Designed end-to-end predictive healthcare machine learning models prioritizing algorithmic fairness and statistical robustness. Focused on addressing heavy class imbalance across large-scale patient telemetry datasets to produce reliable diagnostic insights.",
+    achievements: [
+      "Balanced complex 48,000-record dataset using SMOTE synthetic oversampling techniques.",
+      "Optimized XGBoost and Gradient Boosting classifiers to reach 86% overall diagnostic accuracy.",
+      "Implemented model interpretability frameworks and Responsible AI compliance standards.",
+    ],
+    techStack: "PYTHON · SCIKIT-LEARN · XGBOOST · SMOTE · PANDAS · RESPONSIBLE AI",
+  },
 ];
 
-/* ─────────────────────────────────────────────────────────────
-   Smooth S-curve connector.
-   Viewbox is 100 wide × 70 tall.
-   Left card's right edge sits at x≈46, right card's left edge at x≈54.
-   fromRight=true  → flowing from right card down to left card.
-   fromRight=false → flowing from left card down to right card.
-─────────────────────────────────────────────────────────────── */
-const CurveConnector = ({ fromRight }) => {
-    // Cubic bezier S-curve: start and end anchor on the spine centre-ish,
-    // control points pull it smoothly to each side.
-    const d = fromRight
-        ? 'M 54,0 C 54,35 46,35 46,70'   // right → left
-        : 'M 46,0 C 46,35 54,35 54,70';  // left  → right
-
-    return (
-        <div className="w-full hidden md:block" style={{ height: '70px' }}>
-            <svg viewBox="0 0 100 70" className="w-full h-full" preserveAspectRatio="none">
-                {/* faint ghost track */}
-                <path d={d} fill="none" stroke="#000" strokeWidth="0.4" opacity="0.15" />
-
-                {/* animated draw-in foreground */}
-                <path
-                    className="curve-path"
-                    d={d}
-                    fill="none"
-                    stroke="#000"
-                    strokeWidth="0.9"
-                    strokeLinecap="round"
-                />
-
-                {/* travelling dot */}
-                <circle r="1.4" fill="#000">
-                    <animateMotion dur={fromRight ? '2.4s' : '2s'} repeatCount="indefinite" path={d} />
-                </circle>
-
-                {/* endpoint nubs */}
-                <circle cx={fromRight ? 54 : 46} cy="0"  r="1.8" fill="#000" opacity="0.35" />
-                <circle cx={fromRight ? 46 : 54} cy="70" r="1.8" fill="#000" opacity="0.35" />
-            </svg>
-        </div>
-    );
-};
-
-/* ─── Status pill — clean black/grey, ✓ tick for completed ─── */
-const StatusPill = ({ status }) => {
-    const isCompleted = status === 'COMPLETED';
-    return (
-        <span className={`flex-shrink-0 flex items-center gap-1.5 font-mono text-[9px] font-bold tracking-widest border px-2.5 py-1 uppercase ${
-            isCompleted
-                ? 'border-black/30 text-black/40 bg-black/[0.04]'
-                : 'border-black text-black bg-black/[0.08]'
-        }`}>
-            {isCompleted ? '✓ ' : '● '}{status}
-        </span>
-    );
-};
-
-/* ─── Compact always-visible card header ─── */
-const CardHeader = ({ item, isOpen, onToggle }) => (
-    <button
-        onClick={onToggle}
-        className="w-full text-left px-5 py-4 flex items-center justify-between gap-4 group hover:bg-black/[0.025] transition-colors"
-    >
-        <div className="min-w-0 flex-1">
-            <span className="font-mono text-[10px] font-bold tracking-widest text-black/35 block mb-0.5">
-                // {item.period}
-            </span>
-            <h3 className="font-[900] text-base md:text-xl tracking-tight text-black uppercase leading-tight">
-                {item.role}
-            </h3>
-            <p className="font-mono text-[10px] font-bold tracking-tight text-black/50 uppercase mt-0.5">
-                {item.company} — {item.location}
-            </p>
-        </div>
-
-        <StatusPill status={item.status} />
-
-        <motion.span
-            animate={{ rotate: isOpen ? 180 : 0 }}
-            transition={{ duration: 0.25, ease: 'easeInOut' }}
-            className="flex-shrink-0 font-mono text-sm text-black/30 group-hover:text-black/60 transition-colors"
-        >
-            ↓
-        </motion.span>
-    </button>
-);
-
-/* ─── Full expandable node card ─── */
-const ExperienceNode = ({ item, side, isOpen, onToggle }) => (
-    <div className="exp-node-card w-full md:w-[calc(50%-2rem)] flex-shrink-0">
-
-        {/* Above-card badge */}
-        <div className={`flex items-center gap-3 mb-3 ${side === 'right' ? 'flex-row-reverse' : ''}`}>
-            <div className="flex items-center gap-2 bg-black px-3 py-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-white inline-block" />
-                <span className="font-mono text-[10px] font-bold text-white tracking-widest">{item.nodeId}</span>
-            </div>
-        </div>
-
-        {/* Card */}
-        <div className={`bg-[#E5E5E5] border-[2px] border-black relative transition-all duration-300 ${
-            isOpen ? 'shadow-[8px_8px_0px_#000]' : 'shadow-[4px_4px_0px_rgba(0,0,0,0.35)] hover:shadow-[6px_6px_0px_#000]'
-        }`}>
-            <div className="absolute top-2 right-2 w-2 h-2 bg-black pointer-events-none" />
-            <div className="absolute bottom-2 left-2 w-2 h-2 bg-black pointer-events-none" />
-
-            {/* Summary header */}
-            <div className="border-b border-black/10">
-                <CardHeader item={item} isOpen={isOpen} onToggle={onToggle} />
-            </div>
-
-            {/* Animated detail panel */}
-            <AnimatePresence initial={false}>
-                {isOpen && (
-                    <motion.div
-                        key="detail"
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.36, ease: [0.4, 0, 0.2, 1] }}
-                        style={{ overflow: 'hidden' }}
-                    >
-                        <div className="p-5 md:p-7 grid grid-cols-1 lg:grid-cols-5 gap-6 border-b border-black/10">
-                            <p className="font-mono text-sm leading-relaxed text-black/80 lg:col-span-3">
-                                {item.desc}
-                            </p>
-                            <div className="lg:col-span-2 space-y-2 lg:border-l border-black/10 lg:pl-6">
-                                <span className="font-mono text-[9px] font-bold tracking-widest text-black/30 block">
-                                    // SYSTEM_PARAMS
-                                </span>
-                                {item.metrics.map((metric, idx) => (
-                                    <div key={idx} className="flex flex-col font-mono text-xs border border-black/10 p-2 bg-black/[0.03]">
-                                        <span className="text-black/40 uppercase tracking-tight text-[9px] font-bold">
-                                            [ {metric.label} ]
-                                        </span>
-                                        <span className="font-bold text-black uppercase tracking-tight text-[11px] mt-0.5">
-                                            {metric.value}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="px-5 md:px-7 py-4 flex flex-wrap items-center gap-2">
-                            {item.tags.map((tag) => (
-                                <span key={tag} className="font-mono text-[9px] font-bold tracking-widest text-black/40 border border-black/20 px-2 py-1 uppercase">
-                                    {tag}
-                                </span>
-                            ))}
-                            <button
-                                onClick={onToggle}
-                                className="ml-auto font-mono text-[9px] font-bold tracking-widest text-black/30 uppercase hover:text-black transition-colors border border-black/20 px-2 py-1"
-                            >
-                                COLLAPSE ↑
-                            </button>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </div>
-    </div>
-);
-
-/* ─── Main Section ─── */
 const Experience = () => {
-    const sectionRef = useRef(null);
-    const [openId, setOpenId] = useState(null);
-    const toggle = (id) => setOpenId(prev => prev === id ? null : id);
+  const [activeIndex, setActiveIndex] = useState(0);
 
-    useEffect(() => {
-        const ctx = gsap.context(() => {
-            // Slide cards in
-            gsap.utils.toArray('.exp-node-card').forEach((card, i) => {
-                const isRight = i % 2 === 1;
-                gsap.fromTo(card,
-                    { opacity: 0, x: isRight ? 50 : -50 },
-                    { opacity: 1, x: 0, duration: 0.65, ease: 'power3.out',
-                      scrollTrigger: { trigger: card, start: 'top 80%', once: true } }
-                );
-            });
+  return (
+    <section
+      id="experience"
+      className="relative w-full min-h-screen bg-[#d9d9d9] text-black py-24 px-6 md:px-12 lg:px-24 border-t border-black/15 selection:bg-black selection:text-white overflow-hidden"
+    >
+      {/* 2. Canvas Background Refinement: Clean 32px Blueprint Grid */}
+      <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(to_right,#0000000d_1px,transparent_1px),linear-gradient(to_bottom,#0000000d_1px,transparent_1px)] bg-[size:32px_32px]" />
 
-            // Draw curves on scroll
-            gsap.utils.toArray('.curve-path').forEach((path) => {
-                const length = path.getTotalLength?.() || 200;
-                gsap.set(path, { strokeDasharray: length, strokeDashoffset: length });
-                gsap.to(path, {
-                    strokeDashoffset: 0, duration: 1.1, ease: 'power2.inOut',
-                    scrollTrigger: { trigger: path, start: 'top 90%', once: true }
-                });
-            });
+      {/* Absolute Positioned Fixed Corner Crosshair Nodes (+) */}
+      <span className="absolute top-6 left-6 font-mono text-[10px] text-black/30 pointer-events-none select-none">
+        +
+      </span>
+      <span className="absolute top-6 right-6 font-mono text-[10px] text-black/30 pointer-events-none select-none">
+        +
+      </span>
+      <span className="absolute bottom-6 left-6 font-mono text-[10px] text-black/30 pointer-events-none select-none">
+        +
+      </span>
+      <span className="absolute bottom-6 right-6 font-mono text-[10px] text-black/30 pointer-events-none select-none">
+        +
+      </span>
 
-            // Spine nodes
-            gsap.fromTo('.spine-node',
-                { scale: 0 },
-                { scale: 1, stagger: 0.2, duration: 0.4, ease: 'back.out(2)',
-                  scrollTrigger: { trigger: sectionRef.current, start: 'top 65%', once: true } }
-            );
-        }, sectionRef);
+      <div className="relative z-10 max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+        {/* 1. Left Column (Sticky Anchor) */}
+        <div className="lg:col-span-4 lg:sticky lg:top-24 space-y-6">
+          <div className="space-y-1">
 
-        return () => ctx.revert();
-    }, []);
+            {/* Interactive State Inversion (Group Hover) */}
+            <div className="group cursor-pointer">
+              <h2 className="font-bold tracking-tighter text-4xl md:text-5xl text-black group-hover:text-transparent group-hover:[-webkit-text-stroke:1.5px_#000000] uppercase leading-none transition-all duration-300 ease-in-out">
+                EXPERIENCE
+              </h2>
+              <div className="font-bold tracking-tighter text-4xl md:text-5xl text-transparent [-webkit-text-stroke:1.5px_#000000] group-hover:text-black group-hover:[-webkit-text-stroke:0px] uppercase leading-none mt-1 transition-all duration-300 ease-in-out">
+                JOURNEY
+              </div>
+            </div>
 
-    return (
-        <section
-            id="experience"
-            ref={sectionRef}
-            className="relative w-full min-h-screen bg-[#D1D1D1] py-24 px-4 md:px-8 lg:px-16 overflow-hidden z-10 selection:bg-black selection:text-white"
-        >
-            <div
-                className="absolute inset-0 pointer-events-none opacity-[0.04]"
-                style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '30px 30px' }}
-            />
+            <p className="text-sm md:text-base text-[#555555] font-medium leading-relaxed mt-4">
+              A chronological record of engineering roles, system architecture design, and measurable impact.
+            </p>
+          </div>
+        </div>
 
-            {/* Header */}
-            <div className="w-full max-w-6xl mx-auto mb-16 flex items-end justify-between">
-                <div>
-                    <p className="font-mono text-[10px] font-bold tracking-[0.4em] text-black/30 uppercase mb-2">
-                        // CAREER_GRAPH.RENDER()
-                    </p>
-                    <h2 className="font-[900] text-[clamp(2.5rem,6vw,4.5rem)] leading-none tracking-[-0.05em] text-black uppercase">
-                        EXPERIENCE
-                    </h2>
+        {/* 2. Right Column (Scrolling Stream) */}
+        <div className="lg:col-span-8 flex flex-col">
+          {EXPERIENCE_DATA.map((role, idx) => {
+            const isActive = activeIndex === idx;
+
+            return (
+              <motion.div
+                key={role.id}
+                onViewportEnter={() => setActiveIndex(idx)}
+                viewport={{ amount: 0.5, margin: "-10% 0px -20% 0px" }}
+                className={`border-t border-black/15 pt-8 pb-16 transition-all duration-500 ease-out first:border-t-0 first:pt-0 ${isActive ? "opacity-100" : "opacity-40 hover:opacity-75"
+                  }`}
+              >
+                {/* Header Row */}
+                <div className="flex flex-col md:flex-row md:items-baseline justify-between gap-2">
+                  <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                    <h3 className="text-2xl md:text-3xl font-bold text-black tracking-tight">
+                      {role.roleTitle}
+                    </h3>
+                    <span className="text-xl md:text-2xl text-[#555555] font-medium">
+                      — {role.company}
+                    </span>
+                  </div>
                 </div>
-                <p className="hidden md:block font-mono text-[10px] text-black/30 pb-2 tracking-widest">
-                    CLICK_NODE TO_EXPAND
+
+                {/* System Metadata Line */}
+                <div className="font-mono text-xs text-[#555555] font-semibold mt-2 flex flex-wrap items-center gap-3">
+                  <span>{role.period}</span>
+                  <span className="text-black/30">•</span>
+                  <span>[ {role.location} ]</span>
+                </div>
+
+                {/* Story Narrative */}
+                <p className="text-base md:text-lg text-gray-800 leading-relaxed mt-6 font-normal">
+                  {role.narrative}
                 </p>
-            </div>
 
-            {/* Graph */}
-            <div className="w-full max-w-6xl mx-auto relative">
-                <div className="absolute left-1/2 top-0 bottom-0 w-[1px] bg-black/10 hidden md:block -translate-x-1/2" />
-
-                {roadmapData.map((item, i) => {
-                    const isRight = i % 2 === 1;
-                    const isOpen  = openId === item.id;
-
-                    return (
-                        <div key={item.id}>
-                            <div className={`relative flex items-start gap-0 md:gap-8 ${isRight ? 'flex-row-reverse' : 'flex-row'} mb-1`}>
-
-                                <ExperienceNode
-                                    item={item}
-                                    side={isRight ? 'right' : 'left'}
-                                    isOpen={isOpen}
-                                    onToggle={() => toggle(item.id)}
-                                />
-
-                                {/* Spine diamond */}
-                                <div className="hidden md:flex flex-col items-center justify-start pt-8 flex-shrink-0 w-16 relative z-10">
-                                    <div
-                                        className="spine-node w-4 h-4 bg-black rotate-45 relative"
-                                        style={{ boxShadow: '0 0 0 3px #D1D1D1, 0 0 0 5px #000' }}
-                                    />
-                                    <span className="font-mono text-[8px] text-black/25 tracking-widest mt-3 rotate-90 whitespace-nowrap">
-                                        {i + 1} / {roadmapData.length}
-                                    </span>
-                                </div>
-
-                                <div className="hidden md:block w-[calc(50%-2rem)] flex-shrink-0" />
-                            </div>
-
-                            {/* Smooth curve connector */}
-                            {i < roadmapData.length - 1 && (
-                                <CurveConnector fromRight={isRight} />
-                            )}
-                        </div>
-                    );
-                })}
-
-                {/* End marker */}
-                <div className="mt-10 flex flex-col items-center gap-3">
-                    <div className="w-[1px] h-10 bg-black/20 hidden md:block" />
-                    <div className="flex items-center gap-4">
-                        <div className="h-[1px] w-16 md:w-32 bg-black/20" />
-                        <div className="bg-black text-white font-mono text-[10px] font-bold tracking-widest px-4 py-2 uppercase">
-                            END_OF_GRAPH // v2026
-                        </div>
-                        <div className="h-[1px] w-16 md:w-32 bg-black/20" />
+                {/* Key Achievements */}
+                <div className="mt-6 space-y-3">
+                  {role.achievements.map((item, aIdx) => (
+                    <div key={aIdx} className="flex items-start gap-3">
+                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-black mt-2 flex-shrink-0" />
+                      <p className="text-sm md:text-base text-gray-900 leading-normal font-normal">
+                        {item}
+                      </p>
                     </div>
-                    <p className="font-mono text-[10px] text-black/30 tracking-widest mt-1">
-                        [ MORE_NODES_INCOMING ]
-                    </p>
+                  ))}
                 </div>
-            </div>
-        </section>
-    );
+
+                {/* Tech Stack Line */}
+                <div className="mt-8 pt-4 border-t border-black/10 font-mono text-xs text-[#555555] font-semibold uppercase tracking-tight block">
+                  {role.techStack}
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
 };
 
 export default Experience;
