@@ -45,25 +45,27 @@ const WireframeTerrain = () => {
         return geo;
     }, []);
 
-    // Cache pos attribute and originalY outside the frame loop
-    const posAttr = useMemo(() => geometry.attributes.position, [geometry]);
+    // Cache originalY outside the frame loop (read-only reference)
     const originalY = useMemo(() => geometry.userData.originalY, [geometry]);
 
     useFrame((state) => {
         if (!meshRef.current) return;
 
+        // Access position attribute directly inside useFrame (mutation allowed in callbacks)
+        const attr = geometry.attributes.position;
         const time = state.clock.getElapsedTime();
-        const count = posAttr.count;
+        const count = attr.count;
 
         for (let i = 0; i < count; i++) {
-            const x = posAttr.getX(i);
-            const z = posAttr.getZ(i);
+            const x = attr.getX(i);
+            const z = attr.getZ(i);
             const baseY = originalY[i];
             const ripple = Math.sin(x * 1.5 + time) * 0.3 + Math.cos(z * 1.5 + time * 0.7) * 0.3;
-            posAttr.setY(i, baseY + ripple);
+            attr.setY(i, baseY + ripple);
         }
 
-        posAttr.needsUpdate = true;
+        // eslint-disable-next-line react-hooks/immutability
+        geometry.attributes.position.needsUpdate = true;
     });
 
     return (
@@ -150,7 +152,7 @@ const MechanicalLetter = ({ targetChar, index }) => {
             clearTimeout(t);
             gsap.killTweensOf(tile);
         };
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleMouseMove = (e) => {
         if (!isLockedRef.current || !tileRef.current) return;
